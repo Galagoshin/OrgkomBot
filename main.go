@@ -12,6 +12,7 @@ import (
 	"orgkombot/db"
 	"orgkombot/responser"
 	"orgkombot/responser/callback"
+	"orgkombot/tasks"
 )
 
 const VERSION = "1.0.0-ALPHA2"
@@ -29,6 +30,7 @@ func main() {
 				return
 			}
 		}
+		tasks.AutoStatusTask.Run()
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Subscribe})
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.GenQR})
 		vk.GetHandler().RegisterResponser(responser.Responser)
