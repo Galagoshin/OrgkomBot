@@ -6,7 +6,7 @@ import (
 	"orgkombot/api"
 )
 
-func Menu(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
+func Menu(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, gen bool) {
 	kbrd := keyboards.StaticKeyboard{}
 	kbrd.Init()
 	kbrd.AddButton(keyboards.NormalButton{
@@ -18,15 +18,28 @@ func Menu(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		Color: keyboards.GreenColor,
 		Text:  "Профиль 👤",
 	})
-	kbrd.AddButton(keyboards.NormalButton{
-		Row:    0,
-		Column: 1,
-		Payload: keyboards.Payload{
-			"action": "qr",
-		},
-		Color: keyboards.GreenColor,
-		Text:  "QR код 🔐",
-	})
+	qr := user.GetQR()
+	if qr.OwnerId == 0 {
+		kbrd.AddButton(keyboards.CallbackButton{
+			Row:    0,
+			Column: 1,
+			Payload: keyboards.Payload{
+				"action": "qr",
+				"next":   "menu",
+			},
+			Text: "QR код 🔐",
+		})
+	} else {
+		kbrd.AddButton(keyboards.NormalButton{
+			Row:    0,
+			Column: 1,
+			Payload: keyboards.Payload{
+				"action": "qr",
+			},
+			Color: keyboards.GreenColor,
+			Text:  "QR код 🔐",
+		})
+	}
 	kbrd.AddButton(keyboards.NormalButton{
 		Row:    1,
 		Column: 0,
@@ -81,8 +94,15 @@ func Menu(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		},
 		Text: "Рейтинг 🏆",
 	})
-	chat.SendMessage(chats.Message{
-		Text:     "Выбери на клавиатуре снизу, что хочешь глянуть.",
-		Keyboard: &kbrd,
-	})
+	if gen {
+		chat.SendMessage(chats.Message{
+			Text:     "Теперь твой QR сохранён в базе и будет появляться моментально.",
+			Keyboard: &kbrd,
+		})
+	} else {
+		chat.SendMessage(chats.Message{
+			Text:     "Выбери на клавиатуре снизу, что хочешь глянуть.",
+			Keyboard: &kbrd,
+		})
+	}
 }

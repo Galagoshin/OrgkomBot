@@ -8,7 +8,7 @@ import (
 	"orgkombot/api"
 )
 
-func QR(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
+func QR(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, profile bool, gen bool) {
 	qr := user.GetQR()
 	if qr.OwnerId == 0 {
 		qr_file := files.File{Path: fmt.Sprintf("./qr_codes/%d.png", user.GetId())}
@@ -24,4 +24,11 @@ func QR(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 			&qr,
 		},
 	})
+	if gen {
+		if profile {
+			Profile(chat, outgoing, user, false, true)
+		} else {
+			Menu(chat, outgoing, user, true)
+		}
+	}
 }

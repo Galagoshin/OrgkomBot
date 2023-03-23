@@ -14,7 +14,7 @@ import (
 	"orgkombot/responser/callback"
 )
 
-const VERSION = "1.0.0-ALPHA1"
+const VERSION = "1.0.0-ALPHA2"
 
 func main() {
 	logger.Print(fmt.Sprintf("OrgkomBot v%s has been loaded (%f s.)", VERSION, time.MeasureExecution(func() {
@@ -29,7 +29,8 @@ func main() {
 				return
 			}
 		}
-		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Schedule})
+		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Subscribe})
+		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.GenQR})
 		vk.GetHandler().RegisterResponser(responser.Responser)
 	})))
 	bot.Run()

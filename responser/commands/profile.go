@@ -7,7 +7,7 @@ import (
 	"orgkombot/api"
 )
 
-func Profile(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, edited bool) {
+func Profile(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, edited, gen bool) {
 	kbrd := keyboards.StaticKeyboard{}
 	kbrd.Init()
 	kbrd.AddButton(keyboards.NormalButton{
@@ -19,15 +19,28 @@ func Profile(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, edi
 		Color: keyboards.BlueColor,
 		Text:  "Инвентарь 👕",
 	})
-	kbrd.AddButton(keyboards.NormalButton{
-		Row:    1,
-		Column: 0,
-		Color:  keyboards.BlueColor,
-		Payload: keyboards.Payload{
-			"action": "qr",
-		},
-		Text: "QR код 🔐",
-	})
+	qr := user.GetQR()
+	if qr.OwnerId == 0 {
+		kbrd.AddButton(keyboards.CallbackButton{
+			Row:    1,
+			Column: 0,
+			Payload: keyboards.Payload{
+				"action": "qr",
+				"next":   "profile",
+			},
+			Text: "QR код 🔐",
+		})
+	} else {
+		kbrd.AddButton(keyboards.NormalButton{
+			Row:    1,
+			Column: 0,
+			Payload: keyboards.Payload{
+				"action": "qrp",
+			},
+			Color: keyboards.BlueColor,
+			Text:  "QR код 🔐",
+		})
+	}
 	if user.IsSubscribed() {
 		kbrd.AddButton(keyboards.CallbackButton{
 			Row:    3,
@@ -78,9 +91,16 @@ func Profile(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, edi
 			})
 		}
 	} else {
-		chat.SendMessage(chats.Message{
-			Text:     fmt.Sprintf("Твой рейтинг: %d 🏆\nТвои коины: %d \U0001FA99", user.GetRating(), user.GetCoins()),
-			Keyboard: &kbrd,
-		})
+		if gen {
+			chat.SendMessage(chats.Message{
+				Text:     fmt.Sprintf("Теперь твой QR сохранён в базе и будет появляться моментально."),
+				Keyboard: &kbrd,
+			})
+		} else {
+			chat.SendMessage(chats.Message{
+				Text:     fmt.Sprintf("Твой рейтинг: %d 🏆\nТвои коины: %d \U0001FA99", user.GetRating(), user.GetCoins()),
+				Keyboard: &kbrd,
+			})
+		}
 	}
 }

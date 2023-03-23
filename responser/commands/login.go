@@ -12,7 +12,7 @@ func StartLogin(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) 
 }
 
 func InputName(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
-	match, _ := regexp.MatchString("^([А-Яа-яё\\-]{1,25} [А-Яа-яё\\-]{1,25} [А-Яа-яё\\-]{1,25})$", outgoing.Text)
+	match, _ := regexp.MatchString("^([А-Яа-яё\\-]{1,25} [А-Яа-яё\\- ]{1,50})$", outgoing.Text)
 	if !match {
 		chat.SendMessage(chats.Message{Text: "Неправильный формат ФИО!\nФормат: \"Фамилия Имя Отчество\".\nНапример: Иванов Иван Иванович"})
 		user.Write(api.TypeName)
@@ -38,5 +38,5 @@ func InputGroup(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) 
 	api.SetLoginName(user, outgoing.Text)
 	user.Create(login_name, outgoing.Text)
 	chat.SendMessage(chats.Message{Text: "Отлично! Теперь тебе доступны основные функции бота."})
-	Menu(chat, outgoing, user)
+	Menu(chat, outgoing, user, false)
 }

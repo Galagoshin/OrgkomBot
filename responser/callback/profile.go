@@ -7,7 +7,7 @@ import (
 	"orgkombot/responser/commands"
 )
 
-func Schedule(args ...any) {
+func Subscribe(args ...any) {
 	callback := args[0].(chats.Callback)
 	chat := callback.Chat
 	user := api.User{VKUser: users.User(chat.GetId())}
@@ -15,13 +15,8 @@ func Schedule(args ...any) {
 	payload := callback.Payload
 	if payload["action"] != nil {
 		if payload["action"] == "subscribe" {
-			if user.IsSubscribed() {
-				user.Subscribe(false)
-				commands.Profile(chat, chats.OutgoingMessage{}, user, true)
-			} else {
-				user.Subscribe(true)
-				commands.Profile(chat, chats.OutgoingMessage{}, user, true)
-			}
+			user.Subscribe(!user.IsSubscribed())
+			commands.Profile(chat, chats.OutgoingMessage{}, user, true, false)
 			callback.SendAnswer(chats.CallbackAnswer{Text: "Изменения профиля сохраненены."})
 			return
 		}

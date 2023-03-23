@@ -39,7 +39,9 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 	}
 	if message.Payload["action"] != nil {
 		if message.Payload["action"] == "qr" {
-			commands.QR(chat, message, user)
+			commands.QR(chat, message, user, false, false)
+		} else if message.Payload["action"] == "qrp" {
+			commands.QR(chat, message, user, true, false)
 		} else if message.Payload["action"] == "bonus" {
 			commands.Bonus(chat, message, user)
 		} else if message.Payload["action"] == "cases" {
@@ -47,13 +49,13 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 		} else if message.Payload["action"] == "top" {
 			commands.Top(chat, message, user)
 		} else if message.Payload["action"] == "profile" {
-			commands.Profile(chat, message, user, false)
+			commands.Profile(chat, message, user, false, false)
 		} else if message.Payload["action"] == "inventory" {
 			commands.Inventory(chat, message, user)
 		} else {
-			commands.Menu(chat, message, user)
+			commands.Menu(chat, message, user, false)
 		}
 		return
 	}
-	commands.Menu(chat, message, user)
+	commands.Menu(chat, message, user, false)
 }
