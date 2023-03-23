@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres
+    container_name: orgkombot-db
+    restart: always
+    ports:
+      - ${POSTGRES_HOST}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  app:
+    container_name: orgkombot-app
+    restart: always
+    build: ./
+    depends_on:
+      - postgres
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./bot.gconf:/app/bot.gconf
+      - ./vkgo.gconf:/app/vkgo.gconf
+      - ./group_tokens.list:/app/group_tokens.list
+      - ./widget_tokens.list:/app/widget_tokens.list
+      - ./user_tokens.list:/app/user_tokens.list
+      - ./qr_codes:/app/qr_codes
+      - ./logs:/app/logs
