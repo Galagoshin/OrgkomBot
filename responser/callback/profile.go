@@ -18,7 +18,6 @@ func Subscribe(args ...any) {
 			user.Subscribe(!user.IsSubscribed())
 			commands.Profile(chat, chats.OutgoingMessage{}, user, true, false)
 			callback.SendAnswer(chats.CallbackAnswer{Text: "Изменения профиля сохраненены."})
-			return
 		}
 	}
 }

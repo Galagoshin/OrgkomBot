@@ -22,7 +22,6 @@ func GenQR(args ...any) {
 			} else {
 				go commands.QR(chat, chats.OutgoingMessage{}, user, false, true)
 			}
-			return
 		}
 	}
 }
