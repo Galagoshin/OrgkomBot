@@ -3,33 +3,71 @@ package api
 import (
 	"context"
 	"github.com/Galagoshin/GoLogger/logger"
+	"github.com/Galagoshin/GoUtils/json"
+	"orgkombot/config"
 	"orgkombot/db"
 )
 
 const (
-	EVENT_1      = 1
-	EVENT_2      = 2
-	EVENT_3      = 3
-	BANK_1       = 4
-	BANK_2       = 5
-	BANK_3       = 6
-	MERCH        = 7
-	MARKET       = 8
-	BONUS_1      = 9
-	BONUS_2      = 10
-	BONUS_3      = 11
-	CASE         = 12
-	ACHIEVEMENTS = 13
+	EVENT_1      = 0
+	EVENT_2      = 0x1
+	EVENT_3      = 0x2
+	BANK_1       = 0x3
+	BANK_2       = 0x4
+	BANK_3       = 0x5
+	MERCH        = 0x6
+	MARKET       = 0x7
+	BONUS_1      = 0x8
+	BONUS_2      = 0x9
+	BONUS_3      = 0xA
+	CASE         = 0xB
+	ACHIEVEMENTS = 0xC
 )
 
 type Achievement struct {
 	id       uint8
-	progress uint8
+	progress int8
+}
+
+func (achievement *Achievement) GetName() string {
+	data, err := json.Decode(config.GetAllAchievementsJson())
+	if err != nil {
+		logger.Error(err)
+		return ""
+	}
+	return data["achievements"].([]any)[achievement.id].(map[string]any)["name"].(string)
+}
+
+func (achievement *Achievement) GetDescription() string {
+	data, err := json.Decode(config.GetAllAchievementsJson())
+	if err != nil {
+		logger.Error(err)
+		return ""
+	}
+	return data["achievements"].([]any)[achievement.id].(map[string]any)["description"].(string)
+}
+
+func (achievement *Achievement) GetLimit() uint {
+	data, err := json.Decode(config.GetAllAchievementsJson())
+	if err != nil {
+		logger.Error(err)
+		return 0
+	}
+	return uint(data["achievements"].([]any)[achievement.id].(map[string]any)["limit"].(float64))
+}
+
+func (achievement *Achievement) GetReward() uint {
+	data, err := json.Decode(config.GetAllAchievementsJson())
+	if err != nil {
+		logger.Error(err)
+		return 0
+	}
+	return uint(data["achievements"].([]any)[achievement.id].(map[string]any)["reward"].(float64))
 }
 
 func (user *User) GetCompletedAchievements() []*Achievement {
 	achievements := []*Achievement{}
-	rows, err := db.Instance.Query(context.Background(), "SELECT achievement_id FROM achievements WHERE owner_id = $1 AND progress = 100;", user.GetId())
+	rows, err := db.Instance.Query(context.Background(), "SELECT achievement_id FROM achievements WHERE owner_id = $1 AND progress = -1;", user.GetId())
 	if err != nil {
 		logger.Error(err)
 		return []*Achievement{}
@@ -41,7 +79,7 @@ func (user *User) GetCompletedAchievements() []*Achievement {
 			logger.Error(err)
 			return nil
 		}
-		achievements = append(achievements, &Achievement{id: a_id, progress: 100})
+		achievements = append(achievements, &Achievement{id: a_id, progress: -1})
 	}
 	return achievements
 }
@@ -54,7 +92,8 @@ func (user *User) GetAchievements() []*Achievement {
 		return []*Achievement{}
 	}
 	for rows.Next() {
-		var a_id, progress uint8
+		var a_id uint8
+		var progress int8
 		err := rows.Scan(&a_id, &progress)
 		if err != nil {
 			logger.Error(err)
@@ -65,7 +104,7 @@ func (user *User) GetAchievements() []*Achievement {
 	return achievements
 }
 
-func (achievement *Achievement) SetProgress(progress uint8) {
+func (achievement *Achievement) SetProgress(progress int8) {
 	err := db.Instance.QueryRow(context.Background(), "UPDATE achievement_id SET progress = $1;", progress).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
@@ -76,10 +115,10 @@ func (achievement *Achievement) SetProgress(progress uint8) {
 	achievement.progress = progress
 }
 
-func (achievement *Achievement) GetProgress() uint8 {
+func (achievement *Achievement) GetProgress() int8 {
 	return achievement.progress
 }
 
-func (achievement *Achievement) AddProgress(val uint8) {
+func (achievement *Achievement) AddProgress(val int8) {
 	achievement.SetProgress(achievement.GetProgress() + val)
 }

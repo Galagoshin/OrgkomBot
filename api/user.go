@@ -51,7 +51,7 @@ func (user *User) Create(name, group string) {
 		}
 	}
 	user.Init()
-	for i := 1; i <= 0x10; i++ {
+	for i := 0; i < 0x10; i++ {
 		err := db.Instance.QueryRow(context.Background(), "INSERT INTO achievements (owner_id, achievement_id) VALUES ($1, $2);", user.GetId(), i).Scan()
 		if err != nil {
 			if err.Error() != "no rows in result set" {

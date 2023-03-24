@@ -10,7 +10,7 @@ import (
 )
 
 var WidgetTask = &scheduler.RepeatingTask{
-	Duration:   time.Second * 5,
+	Duration:   time.Minute,
 	OnComplete: WidgetUpdater,
 }
 
@@ -35,7 +35,7 @@ func WidgetUpdater(args ...any) {
 			Description: event.Description,
 		})
 		count++
-		if count == 4 {
+		if count == 3 {
 			break
 		}
 	}
