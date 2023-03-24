@@ -2,7 +2,6 @@ package tasks
 
 import (
 	"fmt"
-	"github.com/Galagoshin/GoLogger/logger"
 	"github.com/Galagoshin/GoUtils/scheduler"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/handler"
 	"time"
@@ -14,19 +13,18 @@ const (
 )
 
 var AutoStatusTask = &scheduler.RepeatingTask{
-	Duration:   time.Second,
+	Duration:   time.Minute,
 	OnComplete: AutoStatusExecutor,
 }
 
 func AutoStatusExecutor(args ...any) {
 	time_now := time.Now().Unix()
 	if time_now < startTime {
-		logger.Debug(0, false, fmt.Sprintf("Status: %s", formatTime(startTime-time_now)))
-		//handler.Group.SetStatus(status)
+		handler.Group.SetStatus(fmt.Sprintf("До начала недели математика осталось %s", formatTime(startTime-time_now)))
 	} else if time_now < endTime {
-		logger.Debug(0, false, fmt.Sprintf("Status: %s", formatTime(endTime-time_now)))
+		handler.Group.SetStatus(fmt.Sprintf("До конца недели математика осталось %s", formatTime(startTime-time_now)))
 	} else {
-		handler.Group.SetStatus("")
+		handler.Group.SetStatus("Неделя математика окончена!")
 	}
 }
 
