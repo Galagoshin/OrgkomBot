@@ -25,6 +25,8 @@ services:
     volumes:
       - ./bot.gconf:/app/bot.gconf
       - ./vkgo.gconf:/app/vkgo.gconf
+      - ./links.gconf:/app/links.gconf
+      - ./events.gconf:/app/events.gconf
       - ./group_tokens.list:/app/group_tokens.list
       - ./widget_tokens.list:/app/widget_tokens.list
       - ./user_tokens.list:/app/user_tokens.list
