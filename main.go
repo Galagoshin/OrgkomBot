@@ -9,6 +9,7 @@ import (
 	"github.com/Galagoshin/VKGoBot/bot"
 	events2 "github.com/Galagoshin/VKGoBot/bot/events"
 	"github.com/Galagoshin/VKGoBot/bot/vk"
+	"orgkombot/config"
 	"orgkombot/db"
 	"orgkombot/responser"
 	"orgkombot/responser/callback"
@@ -30,7 +31,9 @@ func main() {
 				return
 			}
 		}
+		config.InitAllConfigs()
 		tasks.AutoStatusTask.Run()
+		tasks.WidgetTask.Run()
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Subscribe})
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.GenQR})
 		vk.GetHandler().RegisterResponser(responser.Responser)

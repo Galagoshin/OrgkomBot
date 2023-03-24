@@ -4,7 +4,7 @@ import (
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/chats"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/keyboards"
 	"orgkombot/api"
-	"orgkombot/strings"
+	"orgkombot/config"
 )
 
 func Bonus(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
@@ -13,7 +13,7 @@ func Bonus(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	kbrd.AddButton(keyboards.LinkButton{
 		Row:    0,
 		Column: 0,
-		Link:   strings.VK_GROUP,
+		Link:   config.GetVKGroup(),
 		Text:   "Перейти в группу",
 	})
 	chat.SendMessage(chats.Message{

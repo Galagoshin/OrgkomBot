@@ -14,10 +14,10 @@ const (
 
 var AutoStatusTask = &scheduler.RepeatingTask{
 	Duration:   time.Minute,
-	OnComplete: AutoStatusExecutor,
+	OnComplete: AutoStatusUpdater,
 }
 
-func AutoStatusExecutor(args ...any) {
+func AutoStatusUpdater(args ...any) {
 	time_now := time.Now().Unix()
 	if time_now < startTime {
 		handler.Group.SetStatus(fmt.Sprintf("До начала недели математика осталось %s", formatTime(startTime-time_now)))
