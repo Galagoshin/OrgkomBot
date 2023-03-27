@@ -10,13 +10,15 @@ func Achievements(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User
 	data := user.GetAchievements()
 	msg := "Твои достижения: \n"
 	for _, achievement := range data {
-		progress := achievement.GetProgress()
-		if progress == -1 {
-			msg += fmt.Sprintf("⭐ %s %d%s\n - %s\n\n", achievement.GetName(), achievement.GetProgress(), "%", achievement.GetDescription())
+		if achievement.GetProgress() == achievement.GetLimit() {
+			msg += fmt.Sprintf("⭐ %s 100%s (%d/%d)\n - %s\n\n", achievement.GetName(), "%", achievement.GetProgress(), achievement.GetLimit(), achievement.GetDescription())
 		} else {
-			msg += fmt.Sprintf("🚫 %s %d%s (+%d \U0001FA99)\n - %s \n\n", achievement.GetName(), achievement.GetProgress(), "%", achievement.GetReward(), achievement.GetDescription())
+			msg += fmt.Sprintf("🚫 %s %.1f%s (%d/%d)\n - %s \n\n", achievement.GetName(), (float64(achievement.GetProgress())/float64(achievement.GetLimit()))*100, "%", achievement.GetProgress(), achievement.GetLimit(), achievement.GetDescription())
 		}
-		break
+		//TODO: delete here
+		if achievement.GetId() == 0xC {
+			break
+		}
 	}
 	chat.SendMessage(chats.Message{Text: msg})
 }

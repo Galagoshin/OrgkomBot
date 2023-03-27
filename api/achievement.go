@@ -26,7 +26,7 @@ const (
 
 type Achievement struct {
 	id       uint8
-	progress int8
+	progress uint8
 }
 
 func (achievement *Achievement) GetName() string {
@@ -47,13 +47,13 @@ func (achievement *Achievement) GetDescription() string {
 	return data["achievements"].([]any)[achievement.id].(map[string]any)["description"].(string)
 }
 
-func (achievement *Achievement) GetLimit() uint {
+func (achievement *Achievement) GetLimit() uint8 {
 	data, err := json.Decode(config.GetAllAchievementsJson())
 	if err != nil {
 		logger.Error(err)
 		return 0
 	}
-	return uint(data["achievements"].([]any)[achievement.id].(map[string]any)["limit"].(float64))
+	return uint8(data["achievements"].([]any)[achievement.id].(map[string]any)["limit"].(float64))
 }
 
 func (achievement *Achievement) GetReward() uint {
@@ -79,7 +79,9 @@ func (user *User) GetCompletedAchievements() []*Achievement {
 			logger.Error(err)
 			return nil
 		}
-		achievements = append(achievements, &Achievement{id: a_id, progress: -1})
+		achievement := &Achievement{id: a_id}
+		achievement.progress = achievement.GetLimit()
+		achievements = append(achievements, achievement)
 	}
 	return achievements
 }
@@ -92,8 +94,7 @@ func (user *User) GetAchievements() []*Achievement {
 		return []*Achievement{}
 	}
 	for rows.Next() {
-		var a_id uint8
-		var progress int8
+		var a_id, progress uint8
 		err := rows.Scan(&a_id, &progress)
 		if err != nil {
 			logger.Error(err)
@@ -104,7 +105,7 @@ func (user *User) GetAchievements() []*Achievement {
 	return achievements
 }
 
-func (achievement *Achievement) SetProgress(progress int8) {
+func (achievement *Achievement) SetProgress(progress uint8) {
 	err := db.Instance.QueryRow(context.Background(), "UPDATE achievement_id SET progress = $1;", progress).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
@@ -115,10 +116,14 @@ func (achievement *Achievement) SetProgress(progress int8) {
 	achievement.progress = progress
 }
 
-func (achievement *Achievement) GetProgress() int8 {
+func (achievement *Achievement) GetId() uint8 {
+	return achievement.id
+}
+
+func (achievement *Achievement) GetProgress() uint8 {
 	return achievement.progress
 }
 
-func (achievement *Achievement) AddProgress(val int8) {
+func (achievement *Achievement) AddProgress(val uint8) {
 	achievement.SetProgress(achievement.GetProgress() + val)
 }
