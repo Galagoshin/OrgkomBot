@@ -19,7 +19,11 @@ func EventMore(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 				break
 			}
 		}
-		chat.SendMessage(chats.Message{Text: fmt.Sprintf("%s\n----------------\n%s\n\nВремя проведения: %s\nМесто проведения: %s\nВес: %d", event.Name, event.Description, event.Time, event.Address, event.Weight)})
+		weight := "не определён"
+		if event.IsCompleted() {
+			weight = fmt.Sprintf("%d", event.Weight)
+		}
+		chat.SendMessage(chats.Message{Text: fmt.Sprintf("%s\n----------------\n%s\n\nВремя проведения: %s\nМесто проведения: %s\nВес: %s", event.Name, event.Description, event.Time, event.Address, weight)})
 	}
 }
 
@@ -68,6 +72,24 @@ func EventsList(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) 
 				}
 			}
 			if event.IsCompleted() {
+				kbrds = []keyboards.Button{
+					keyboards.NormalButton{
+						Row:   0,
+						Color: keyboards.RedColor,
+						Text:  "Подробнее",
+						Payload: keyboards.Payload{
+							"action": "event",
+							"event":  event.Id,
+						},
+					},
+					keyboards.CallbackButton{
+						Row:  1,
+						Text: "Зарегистрироваться",
+						Payload: keyboards.Payload{
+							"action": "no-register",
+						},
+					},
+				}
 				tmplt.AddElement(index-(i*10), event.Name, "Завершено", attachments.Image{}, kbrds)
 			} else {
 				tmplt.AddElement(index-(i*10), event.Name, event.Time, attachments.Image{}, kbrds)

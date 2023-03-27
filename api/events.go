@@ -37,25 +37,15 @@ func GetAllEvents() []*Event {
 			Description: event_entity.(map[string]any)["description"].(string),
 			Weight:      uint8(event_entity.(map[string]any)["weight"].(float64)),
 			Link:        requests.URL(event_entity.(map[string]any)["link"].(string)),
-			completed:   false,
+			completed:   true,
 		}
-		rows, err := db.Instance.Query(context.Background(), "SELECT id FROM events WHERE id = $2;", result[event_id])
-		rows.Next()
-		rows.Close()
+		var weight, id uint8
+		err := db.Instance.QueryRow(context.Background(), "SELECT id, weight FROM events WHERE id = $1;", result[event_id].Id).Scan(&id, &weight)
 		if err != nil {
 			result[event_id].completed = false
+			continue
 		}
 		if result[event_id].IsCompleted() {
-			var weight uint8
-			err := db.Instance.QueryRow(context.Background(), "SELECT weight FROM events WHERE id = $1;", result[event_id]).Scan(&weight)
-			if err != nil {
-				if err.Error() == "no rows in result set" {
-					return []*Event{}
-				} else {
-					logger.Error(err)
-					return []*Event{}
-				}
-			}
 			result[event_id].Weight = weight
 		}
 	}
