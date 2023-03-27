@@ -13,15 +13,11 @@ func GenQR(args ...any) {
 	user := api.User{VKUser: users.User(chat.GetId())}
 	user.Init()
 	payload := callback.Payload
-	if payload["action"] != nil && payload["next"] != nil {
-		if payload["action"] == "qr" {
-			user.Subscribe(!user.IsSubscribed())
-			callback.SendAnswer(chats.CallbackAnswer{Text: "Мы генерируем тебе QR, он появится через 2 секунды."})
-			if payload["next"] == "profile" {
-				go commands.QR(chat, chats.OutgoingMessage{}, user, true, true)
-			} else {
-				go commands.QR(chat, chats.OutgoingMessage{}, user, false, true)
-			}
-		}
+	user.Subscribe(!user.IsSubscribed())
+	callback.SendAnswer(chats.CallbackAnswer{Text: "Мы генерируем тебе QR, он появится через 2 секунды."})
+	if payload["next"] == "profile" {
+		go commands.QR(chat, chats.OutgoingMessage{}, user, true, true)
+	} else {
+		go commands.QR(chat, chats.OutgoingMessage{}, user, false, true)
 	}
 }

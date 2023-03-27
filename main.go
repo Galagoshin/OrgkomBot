@@ -16,7 +16,7 @@ import (
 	"orgkombot/tasks"
 )
 
-const VERSION = "1.0.0-ALPHA3"
+const VERSION = "1.0.0-ALPHA4"
 
 func main() {
 	logger.Print(fmt.Sprintf("OrgkomBot v%s has been loaded (%f s.)", VERSION, time.MeasureExecution(func() {
@@ -34,9 +34,7 @@ func main() {
 		config.InitAllConfigs()
 		tasks.AutoStatusTask.Run()
 		tasks.WidgetTask.Run()
-		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Subscribe})
-		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.GenQR})
-		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.NoRegister})
+		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Routing})
 		vk.GetHandler().RegisterResponser(responser.Responser)
 	})))
 	bot.Run()
