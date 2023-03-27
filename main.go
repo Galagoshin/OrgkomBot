@@ -36,6 +36,7 @@ func main() {
 		tasks.WidgetTask.Run()
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Subscribe})
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.GenQR})
+		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.NoRegister})
 		vk.GetHandler().RegisterResponser(responser.Responser)
 	})))
 	bot.Run()

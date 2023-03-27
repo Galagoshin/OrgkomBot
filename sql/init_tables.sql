@@ -48,3 +48,20 @@ CREATE TABLE IF NOT EXISTS market (
 
 CREATE INDEX IF NOT EXISTS hash_index ON market(hash);
 CREATE INDEX IF NOT EXISTS item_market_index ON market(item_id);
+
+CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY,
+    weight INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS events_votes (
+    id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES events(id),
+    user_id INTEGER REFERENCES users(id),
+    general INTEGER NOT NULL,
+    organization INTEGER NOT NULL,
+    conversion INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS votes_user_index ON events_votes(user_id);
+CREATE INDEX IF NOT EXISTS votes_event_index ON events_votes(event_id);

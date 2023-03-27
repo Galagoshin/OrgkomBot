@@ -17,6 +17,9 @@
 .idea/
 logs/
 data/
-*.gconf
+bot.gconf
+build.gconf
+vkgo.gconf
+links.gconf
 *.list
 qr_codes/

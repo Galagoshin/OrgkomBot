@@ -52,6 +52,10 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 			commands.Profile(chat, message, user, false, false)
 		} else if message.Payload["action"] == "inventory" {
 			commands.Inventory(chat, message, user)
+		} else if message.Payload["action"] == "events" {
+			commands.EventsList(chat, message, user)
+		} else if message.Payload["action"] == "event" {
+			commands.EventMore(chat, message, user)
 		} else if message.Payload["action"] == "achievements" {
 			commands.Achievements(chat, message, user)
 		} else {

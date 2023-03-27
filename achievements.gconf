@@ -1,0 +1,82 @@
+{
+  "achievements": [
+    {
+      "limit": 1,
+      "reward": 5,
+      "description": "Посети 1 мероприятие",
+      "name": "Социальная бабочка"
+    },
+    {
+      "limit": 3,
+      "reward": 10,
+      "description": "Посети 3 мероприятие",
+      "name": "Социальная бабочка II"
+    },
+    {
+      "limit": 6,
+      "reward": 50,
+      "description": "Посети 6 мероприятий",
+      "name": "Социальная бабочка III"
+    },
+    {
+      "limit": 1,
+      "reward": 1,
+      "description": "Сделай перевод в банке",
+      "name": "Валютный барон"
+    },
+    {
+      "limit": 5,
+      "reward": 5,
+      "description": "Сделай 5 переводов в банке",
+      "name": "Валютный барон II"
+    },
+    {
+      "limit": 15,
+      "reward": 10,
+      "description": "Сделай 15 переводов в банке",
+      "name": "Валютный барон III"
+    },
+    {
+      "limit": 1,
+      "reward": 5,
+      "description": "Купи мерч в мерч-шопе",
+      "name": "Шопоголик"
+    },
+    {
+      "limit": 1,
+      "reward": 5,
+      "description": "Выстави товар на рынок",
+      "name": "Офеня"
+    },
+    {
+      "limit": 1,
+      "reward": 1,
+      "description": "Получи бонуc",
+      "name": "Фанат"
+    },
+    {
+      "limit": 10,
+      "reward": 10,
+      "description": "Получи бонуc 10 раз",
+      "name": "Фанат II"
+    },
+    {
+      "limit": 30,
+      "reward": 50,
+      "description": "Получи бонус 30 раз",
+      "name": "Фанат III"
+    },
+    {
+      "limit": 1,
+      "reward": 10,
+      "description": "Открой бокс со стикерами",
+      "name": "Заначка"
+    },
+    {
+      "limit": 15,
+      "reward": 100,
+      "description": "Получи все достижения",
+      "name": "Иллюминат"
+    }
+  ]
+}

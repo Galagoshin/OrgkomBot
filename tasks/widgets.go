@@ -24,16 +24,27 @@ func WidgetUpdater(args ...any) {
 	widget.Init()
 	count := 0
 	for _, event := range api.GetAllEvents() {
-		widget.AddRow(widgets.ListRow{
-			Index:       count,
-			Title:       event.Name,
-			TitleUrl:    config.GetVKMe(),
-			ButtonText:  "Зарегистрироваться",
-			ButtonUrl:   event.Link,
-			Time:        event.Time,
-			Address:     event.Address,
-			Description: event.Description,
-		})
+		if event.Link == "" {
+			widget.AddRow(widgets.ListRow{
+				Index:       count,
+				Title:       event.Name,
+				TitleUrl:    config.GetVKMe(),
+				Time:        event.Time,
+				Address:     event.Address,
+				Description: event.Description,
+			})
+		} else {
+			widget.AddRow(widgets.ListRow{
+				Index:       count,
+				Title:       event.Name,
+				TitleUrl:    config.GetVKMe(),
+				ButtonText:  "Зарегистрироваться",
+				ButtonUrl:   event.Link,
+				Time:        event.Time,
+				Address:     event.Address,
+				Description: event.Description,
+			})
+		}
 		count++
 		if count == 3 {
 			break
