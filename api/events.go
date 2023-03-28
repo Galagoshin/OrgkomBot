@@ -15,7 +15,7 @@ type Event struct {
 	Time        string
 	Address     string
 	Description string
-	Weight      uint8
+	Weight      float64
 	Link        requests.URL
 	completed   bool
 }
@@ -35,11 +35,12 @@ func GetAllEvents() []*Event {
 			Time:        event_entity.(map[string]any)["time"].(string),
 			Address:     event_entity.(map[string]any)["address"].(string),
 			Description: event_entity.(map[string]any)["description"].(string),
-			Weight:      uint8(event_entity.(map[string]any)["weight"].(float64)),
+			Weight:      event_entity.(map[string]any)["weight"].(float64),
 			Link:        requests.URL(event_entity.(map[string]any)["link"].(string)),
 			completed:   true,
 		}
-		var weight, id uint8
+		var id uint8
+		var weight float64
 		err := db.Instance.QueryRow(context.Background(), "SELECT id, weight FROM events WHERE id = $1;", result[event_id].Id).Scan(&id, &weight)
 		if err != nil {
 			result[event_id].completed = false
@@ -84,7 +85,7 @@ func (user *User) VoteEvent(event *Event, general, organization, conversion int)
 }
 
 func (event *Event) SetWeight() {
-	var weight uint8
+	var weight float64
 	err := db.Instance.QueryRow(context.Background(), `
 	SELECT ((SUM(general) + SUM(organization) + SUM(conversion)) / 3) / COUNT(*) * 10 + $1 FROM events_votes WHERE event_id = $2;
 	`, event.Weight, event.Id).Scan(&weight)

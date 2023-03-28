@@ -21,7 +21,7 @@ func EventMore(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		}
 		weight := "не определён"
 		if event.IsCompleted() {
-			weight = fmt.Sprintf("%d", event.Weight)
+			weight = fmt.Sprintf("%.2f", event.Weight)
 		}
 		chat.SendMessage(chats.Message{Text: fmt.Sprintf("%s\n----------------\n%s\n\nВремя проведения: %s\nМесто проведения: %s\nВес: %s", event.Name, event.Description, event.Time, event.Address, weight)})
 	}
