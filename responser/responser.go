@@ -4,6 +4,7 @@ import (
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/chats"
 	"orgkombot/api"
 	"orgkombot/responser/commands"
+	"strings"
 )
 
 func Responser(chat chats.Chat, message chats.OutgoingMessage) {
@@ -56,6 +57,8 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 			commands.EventsList(chat, message, user)
 		} else if message.Payload["action"] == "event" {
 			commands.EventMore(chat, message, user)
+		} else if strings.Split(message.Payload["action"].(string), " ")[0] == "vote" {
+			commands.VoteEvent(chat, message, user)
 		} else if message.Payload["action"] == "achievements" {
 			commands.Achievements(chat, message, user)
 		} else {

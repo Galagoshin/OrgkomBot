@@ -17,7 +17,7 @@ type User struct {
 	group      string
 	qr         attachments.Image
 	coins      uint
-	rating     uint
+	rating     float64
 	admin      bool
 	banned     bool
 	subscribed bool
@@ -63,7 +63,8 @@ func (user *User) Create(name, group string) {
 }
 
 func (user *User) Init() {
-	var id, vk, coins, admin, banned, rating, subscribed uint
+	var rating float64
+	var id, vk, coins, admin, banned, subscribed uint
 	var name, group, qr string
 	err := db.Instance.QueryRow(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, is_admin, is_banned, is_subscribed FROM users WHERE vk = $1;", user.VKUser).Scan(&id, &vk, &coins, &rating, &name, &group, &qr, &admin, &banned, &subscribed)
 	if err != nil {
@@ -147,7 +148,7 @@ func (user *User) GetCoins() uint {
 	return user.coins
 }
 
-func (user *User) SetRating(value uint) {
+func (user *User) SetRating(value float64) {
 	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET rating = $1;", value).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
@@ -158,11 +159,11 @@ func (user *User) SetRating(value uint) {
 	user.rating = value
 }
 
-func (user *User) AddRating(value uint) {
+func (user *User) AddRating(value float64) {
 	user.SetRating(user.GetRating() + value)
 }
 
-func (user *User) ReduceRating(value uint) {
+func (user *User) ReduceRating(value float64) {
 	user.SetRating(user.GetRating() - value)
 }
 
@@ -170,7 +171,7 @@ func (user *User) HaveRating(value uint) bool {
 	return int(user.GetCoins())-int(value) >= 0
 }
 
-func (user *User) GetRating() uint {
+func (user *User) GetRating() float64 {
 	return user.rating
 }
 

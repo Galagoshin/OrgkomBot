@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
      user_group VARCHAR(20) NOT NULL,
      qr VARCHAR(80) NOT NULL DEFAULT 'nil',
      coins INTEGER NOT NULL DEFAULT 0,
-     rating INTEGER NOT NULL DEFAULT 0,
+     rating REAL NOT NULL DEFAULT 0,
      is_admin INTEGER NOT NULL DEFAULT 0,
      is_banned INTEGER NOT NULL DEFAULT 0,
      is_subscribed INTEGER NOT NULL DEFAULT 1,
@@ -51,7 +51,8 @@ CREATE INDEX IF NOT EXISTS item_market_index ON market(item_id);
 
 CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY,
-    weight INTEGER NOT NULL DEFAULT 0
+    weight REAL NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS events_votes (
@@ -65,3 +66,17 @@ CREATE TABLE IF NOT EXISTS events_votes (
 
 CREATE INDEX IF NOT EXISTS votes_user_index ON events_votes(user_id);
 CREATE INDEX IF NOT EXISTS votes_event_index ON events_votes(event_id);
+
+CREATE TABLE IF NOT EXISTS events_ratings (
+    id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES events(id)
+);
+
+CREATE INDEX IF NOT EXISTS ratings_event_index ON events_ratings(event_id);
+
+CREATE TABLE IF NOT EXISTS events_visits (
+    id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES events(id),
+    user_id INTEGER REFERENCES users(id),
+    position INTEGER NOT NULL DEFAULT 100
+);

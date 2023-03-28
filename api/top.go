@@ -10,15 +10,16 @@ import (
 	"strings"
 )
 
-func GetTopByRating() map[*User]uint {
-	result := make(map[*User]uint)
+func GetTopByRating() map[*User]float64 {
+	result := make(map[*User]float64)
 	rows, err := db.Instance.Query(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, is_admin, is_banned, is_subscribed FROM users ORDER BY rating DESC LIMIT 10;")
 	if err != nil {
 		logger.Error(err)
-		return map[*User]uint{}
+		return map[*User]float64{}
 	}
 	for rows.Next() {
-		var id, vk, coins, admin, banned, rating, subscribed uint
+		var rating float64
+		var id, vk, coins, admin, banned, subscribed uint
 		var name, group, qr string
 		err := rows.Scan(&id, &vk, &coins, &rating, &name, &group, &qr, &admin, &banned, &subscribed)
 		if err != nil {
@@ -29,12 +30,12 @@ func GetTopByRating() map[*User]uint {
 		owner_id, err := strconv.Atoi(strings.Split(qrarr[0], "photo")[1])
 		if err != nil {
 			logger.Error(err)
-			return map[*User]uint{}
+			return map[*User]float64{}
 		}
 		idpic, err := strconv.Atoi(qrarr[1])
 		if err != nil {
 			logger.Error(err)
-			return map[*User]uint{}
+			return map[*User]float64{}
 		}
 		qrcode := attachments.Image{
 			OwnerId: owner_id,

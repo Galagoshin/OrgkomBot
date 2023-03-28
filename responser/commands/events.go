@@ -2,12 +2,128 @@ package commands
 
 import (
 	"fmt"
+	"github.com/Galagoshin/GoLogger/logger"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/attachments"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/chats"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/keyboards"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/templates"
 	"orgkombot/api"
+	"strconv"
+	"strings"
 )
+
+func VoteEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
+	if outgoing.Payload["votes"] != nil {
+		votes := strings.Split(outgoing.Payload["votes"].(string), ",")
+		evid, err := strconv.Atoi(strings.Split(outgoing.Payload["action"].(string), " ")[1])
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		event_id := uint8(evid)
+		var event *api.Event
+		for _, event_el := range api.GetAllEvents() {
+			if event_el.Id == event_id {
+				event = event_el
+				break
+			}
+		}
+		if !event.IsCompleted() || !event.IsVoteOpen() {
+			chat.SendMessage(chats.Message{Text: "Отзыв об этом мероприятии больше недоступен."})
+			return
+		}
+		if user.IsVoted(event) {
+			chat.SendMessage(chats.Message{Text: "Отзыв о мероприятии уже оставлен."})
+			return
+		}
+		ln := -1
+		if outgoing.Payload["votes"].(string) != "" {
+			ln = len(votes)
+		}
+		switch ln {
+		case -1:
+			kbrd := keyboards.StaticKeyboard{}
+			kbrd.Init()
+			for i := 5; i >= 1; i-- {
+				color := keyboards.WhiteColor
+				if i >= 4 {
+					color = keyboards.GreenColor
+				} else if i <= 2 {
+					color = keyboards.RedColor
+				}
+				kbrd.AddButton(keyboards.NormalButton{
+					Row:    0,
+					Column: i - 1,
+					Color:  color,
+					Payload: keyboards.Payload{
+						"action": fmt.Sprintf("vote %d", event_id),
+						"votes":  fmt.Sprintf("%d", i),
+					},
+					Text: fmt.Sprintf("%d", i),
+				})
+			}
+			chat.SendMessage(chats.Message{Text: "Как оценишь мероприятие?", Keyboard: &kbrd})
+			return
+		case 1:
+			kbrd := keyboards.StaticKeyboard{}
+			kbrd.Init()
+			for i := 5; i >= 1; i-- {
+				color := keyboards.WhiteColor
+				if i >= 4 {
+					color = keyboards.GreenColor
+				} else if i <= 2 {
+					color = keyboards.RedColor
+				}
+				kbrd.AddButton(keyboards.NormalButton{
+					Row:    0,
+					Column: i - 1,
+					Color:  color,
+					Payload: keyboards.Payload{
+						"action": fmt.Sprintf("vote %d", event_id),
+						"votes":  fmt.Sprintf("%s,%d", outgoing.Payload["votes"].(string), i),
+					},
+					Text: fmt.Sprintf("%d", i),
+				})
+			}
+			chat.SendMessage(chats.Message{Text: "Как тебе организация мероприятия?", Keyboard: &kbrd})
+			return
+		case 2:
+			kbrd := keyboards.StaticKeyboard{}
+			kbrd.Init()
+			for i := 5; i >= 1; i-- {
+				color := keyboards.WhiteColor
+				if i >= 4 {
+					color = keyboards.GreenColor
+				} else if i <= 2 {
+					color = keyboards.RedColor
+				}
+				kbrd.AddButton(keyboards.NormalButton{
+					Row:    0,
+					Column: i - 1,
+					Color:  color,
+					Payload: keyboards.Payload{
+						"action": fmt.Sprintf("vote %d", event_id),
+						"votes":  fmt.Sprintf("%s,%d", outgoing.Payload["votes"].(string), i),
+					},
+					Text: fmt.Sprintf("%d", i),
+				})
+			}
+			chat.SendMessage(chats.Message{Text: "Придёшь ли ты на это мероприятие в следующем году?", Keyboard: &kbrd})
+			return
+		case 3:
+			general, err1 := strconv.Atoi(votes[0])
+			organization, err2 := strconv.Atoi(votes[1])
+			conversion, err3 := strconv.Atoi(votes[2])
+			if err1 != nil || err2 != nil || err3 != nil {
+				return
+			}
+			user.VoteEvent(event, general, organization, conversion)
+			chat.SendMessage(chats.Message{Text: "Спасибо за отзыв!"})
+			Menu(chat, outgoing, user, false)
+			return
+		}
+	}
+}
 
 func EventMore(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	if outgoing.Payload["event"] != nil {
@@ -21,7 +137,7 @@ func EventMore(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		}
 		weight := "не определён"
 		if event.IsCompleted() {
-			weight = fmt.Sprintf("%.2f", event.Weight)
+			weight = fmt.Sprintf("%.2f", event.GetWeight())
 		}
 		chat.SendMessage(chats.Message{Text: fmt.Sprintf("%s\n----------------\n%s\n\nВремя проведения: %s\nМесто проведения: %s\nВес: %s", event.Name, event.Description, event.Time, event.Address, weight)})
 	}

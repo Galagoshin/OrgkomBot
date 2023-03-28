@@ -89,7 +89,7 @@ func top_widget() {
 			},
 			{
 				Index: 1,
-				Text:  fmt.Sprintf("%d", rating),
+				Text:  fmt.Sprintf("%.2f", rating),
 				Url:   requests.URL(fmt.Sprintf("https://vk.com/id%d", user.VKUser)),
 			},
 		}

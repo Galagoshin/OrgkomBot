@@ -18,14 +18,14 @@ func Top(chat chats.Chat, outgoing chats.OutgoingMessage, usr api.User) {
 		names := strings.Split(user.GetName(), " ")
 		first_name := strings.Replace(strings.ToLower(names[0]), string([]rune(strings.ToLower(names[0]))[:1]), strings.ToUpper(string([]rune(names[0])[:1])), 1)
 		last_name := strings.Replace(strings.ToLower(names[1]), string([]rune(strings.ToLower(names[1]))[:1]), strings.ToUpper(string([]rune(names[1])[:1])), 1)
-		top += fmt.Sprintf("%d. @id%d(%s %s) - %d 🏆\n", i, user.GetVKUser(), first_name, last_name, rating)
+		top += fmt.Sprintf("%d. @id%d(%s %s) - %.2f 🏆\n", i, user.GetVKUser(), first_name, last_name, rating)
 		i++
 	}
 	if !is_user_in_top {
 		names := strings.Split(usr.GetName(), " ")
 		first_name := strings.Replace(strings.ToLower(names[0]), string([]rune(strings.ToLower(names[0]))[:1]), strings.ToUpper(string([]rune(names[0])[:1])), 1)
 		last_name := strings.Replace(strings.ToLower(names[1]), string([]rune(strings.ToLower(names[1]))[:1]), strings.ToUpper(string([]rune(names[1])[:1])), 1)
-		top += fmt.Sprintf("\n.........\n?. @id%d(%s %s) - %d 🏆", usr.GetVKUser(), first_name, last_name, usr.GetRating())
+		top += fmt.Sprintf("\n.........\n?. @id%d(%s %s) - %.2f 🏆", usr.GetVKUser(), first_name, last_name, usr.GetRating())
 	}
 	chat.SendMessage(chats.Message{Text: top})
 }

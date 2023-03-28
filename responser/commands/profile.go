@@ -97,8 +97,24 @@ func Profile(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, edi
 				Keyboard: &kbrd,
 			})
 		} else {
+			visited := "Ни одно мероприятие не было посещено."
+			events := user.GetVisitedEvents()
+			if len(events) != 0 {
+				visited = "Посещённые мероприятия:\n"
+				for event, position := range events {
+					weight := event.GetWeight()
+					ratings_points := weight * 2 * (2.0 / (2.05 * (float64(position+1) - 1.0)))
+					points_str := ""
+					rated := "*"
+					if event.IsRated() {
+						points_str = fmt.Sprintf("+%.2f 🏆", ratings_points)
+						rated = ""
+					}
+					visited += fmt.Sprintf("- %s (%.2f%s) %s\n", event.Name, weight, rated, points_str)
+				}
+			}
 			chat.SendMessage(chats.Message{
-				Text:     fmt.Sprintf("Твой рейтинг: %d 🏆\nТвои коины: %d \U0001FA99", user.GetRating(), user.GetCoins()),
+				Text:     fmt.Sprintf("Твой рейтинг: %.2f 🏆\nТвои коины: %d \U0001FA99\n\n%s", user.GetRating(), user.GetCoins(), visited),
 				Keyboard: &kbrd,
 			})
 		}

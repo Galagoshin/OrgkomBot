@@ -46,11 +46,21 @@ func GetAllEvents() []*Event {
 			result[event_id].completed = false
 			continue
 		}
-		if result[event_id].IsCompleted() {
+		if result[event_id].IsCompleted() && !result[event_id].IsVoteOpen() {
 			result[event_id].Weight = weight
 		}
 	}
 	return result
+}
+
+func (event *Event) GetWeight() float64 {
+	var weight float64
+	err := db.Instance.QueryRow(context.Background(), "SELECT weight FROM events WHERE id = $1;", event.Id).Scan(&weight)
+	if err != nil {
+		logger.Error(err)
+		return 0.0
+	}
+	return weight
 }
 
 func (event *Event) IsCompleted() bool {
@@ -68,14 +78,86 @@ func (event *Event) Complete() {
 }
 
 func (user *User) IsVoted(event *Event) bool {
-	rows, err := db.Instance.Query(context.Background(), "SELECT user_id FROM events_votes WHERE user_id = $1 AND event_id = $2;", user.GetId(), event.Id)
-	rows.Next()
-	defer rows.Close()
-	return err == nil
+	var val uint
+	return db.Instance.QueryRow(context.Background(), "SELECT user_id FROM events_votes WHERE user_id = $1 AND event_id = $2;", user.GetId(), event.Id).Scan(&val) == nil
 }
 
 func (user *User) VoteEvent(event *Event, general, organization, conversion int) {
 	err := db.Instance.QueryRow(context.Background(), "INSERT INTO events_votes (user_id, event_id, general, organization, conversion) VALUES ($1, $2, $3, $4, $5);", user.GetId(), event.Id, general, organization, conversion).Scan()
+	if err != nil {
+		if err.Error() != "no rows in result set" {
+			logger.Error(err)
+			return
+		}
+	}
+}
+
+func (event *Event) IsVoteOpen() bool {
+	var val uint
+	return db.Instance.QueryRow(context.Background(), "SELECT id FROM events WHERE created_at > now() - interval '1 day' AND id = $1;", event.Id).Scan(&val) == nil
+}
+
+func (event *Event) IsRated() bool {
+	var val uint
+	return db.Instance.QueryRow(context.Background(), "SELECT event_id FROM events_ratings WHERE event_id = $1;", event.Id).Scan(&val) == nil
+}
+
+func (event *Event) Rate() {
+	err := db.Instance.QueryRow(context.Background(), "INSERT INTO events_ratings (event_id) VALUES ($1);", event.Id).Scan()
+	if err != nil {
+		if err.Error() != "no rows in result set" {
+			logger.Error(err)
+			return
+		}
+	}
+	weight := event.GetWeight()
+	rows, err := db.Instance.Query(context.Background(), "SELECT id, event_id, user_id, position FROM events_visits WHERE event_id = $1;", event.Id)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	for rows.Next() {
+		var id, event_id, user_id, position uint
+		err := rows.Scan(&id, &event_id, &user_id, &position)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		rating := weight * 2 * (2.0 / (2.05 * (float64(position+1) - 1.0)))
+		err = db.Instance.QueryRow(context.Background(), "UPDATE users SET rating = rating + $1;", rating).Scan()
+		if err != nil {
+			if err.Error() != "no rows in result set" {
+				logger.Error(err)
+				return
+			}
+		}
+	}
+	rows.Close()
+}
+
+func (user *User) GetVisitedEvents() map[*Event]uint {
+	res := make(map[*Event]uint)
+	events := GetAllEvents()
+	rows, err := db.Instance.Query(context.Background(), "SELECT id, event_id, user_id, position FROM events_visits WHERE user_id = $1;", user.GetId())
+	if err != nil {
+		logger.Error(err)
+		return map[*Event]uint{}
+	}
+	for rows.Next() {
+		var id, event_id, user_id, position uint
+		err := rows.Scan(&id, &event_id, &user_id, &position)
+		if err != nil {
+			logger.Error(err)
+			return map[*Event]uint{}
+		}
+		res[events[event_id]] = position
+	}
+	rows.Close()
+	return res
+}
+
+func (user *User) Visit(event *Event, position uint) {
+	err := db.Instance.QueryRow(context.Background(), "INSERT INTO events_visits (event_id, user_id, position) VALUES ($1, $2, $3);", event.Id, user.GetId(), position).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
@@ -90,12 +172,7 @@ func (event *Event) SetWeight() {
 	SELECT ((SUM(general) + SUM(organization) + SUM(conversion)) / 3) / COUNT(*) * 10 + $1 FROM events_votes WHERE event_id = $2;
 	`, event.Weight, event.Id).Scan(&weight)
 	if err != nil {
-		if err.Error() == "no rows in result set" {
-			return
-		} else {
-			logger.Error(err)
-			return
-		}
+		return
 	}
 	event.Weight = weight
 	err = db.Instance.QueryRow(context.Background(), "UPDATE events SET weight = $1;", event.Weight).Scan()

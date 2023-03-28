@@ -17,11 +17,5 @@ func GetAllEventsJson() json.Json {
 		logger.Error(err)
 		return ""
 	}
-	defer func(events *files.File) {
-		err := events.Close()
-		if err != nil {
-			logger.Error(err)
-		}
-	}(&events)
 	return json.Json(events.ReadString())
 }
