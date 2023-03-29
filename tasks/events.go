@@ -7,7 +7,7 @@ import (
 )
 
 var EventsCheckerTask = &scheduler.RepeatingTask{
-	Duration:   time.Minute,
+	Duration:   time.Second,
 	OnComplete: EventsChecker,
 }
 
@@ -16,6 +16,7 @@ func EventsChecker(args ...any) {
 		if event.IsCompleted() && event.IsVoteOpen() {
 			event.SetWeight()
 		} else if event.IsCompleted() && !event.IsVoteOpen() && !event.IsRated() {
+			event.SetWeight()
 			event.Rate()
 		}
 	}

@@ -11,6 +11,7 @@ import (
 	"github.com/Galagoshin/VKGoBot/bot/vk"
 	"orgkombot/config"
 	"orgkombot/db"
+	events3 "orgkombot/events"
 	"orgkombot/responser"
 	"orgkombot/responser/callback"
 	"orgkombot/tasks"
@@ -36,6 +37,7 @@ func main() {
 		tasks.WidgetTask.Run()
 		tasks.EventsCheckerTask.Run()
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Routing})
+		events.RegisterEvent(events.Event{Name: events2.HotReloadEvent, Execute: events3.OnHotReload})
 		vk.GetHandler().RegisterResponser(responser.Responser)
 	})))
 	bot.Run()

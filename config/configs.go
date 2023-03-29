@@ -1,6 +1,11 @@
 package config
 
-import "github.com/Galagoshin/GoLogger/logger"
+import (
+	"github.com/Galagoshin/GoLogger/logger"
+	"github.com/Galagoshin/GoUtils/files"
+	"github.com/Galagoshin/GoUtils/json"
+	"os"
+)
 
 func InitAllConfigs() {
 	links.Init(map[string]any{
@@ -24,6 +29,18 @@ func InitAllConfigs() {
 			return
 		}
 	}
+	err := events.Open(os.O_RDWR)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	defer func(events *files.File) {
+		err := events.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+	}(&events)
+	cachedEvents = json.Json(events.ReadString())
 	if !achievements.Exists() {
 		err := achievements.Create()
 		if err != nil {
@@ -41,4 +58,16 @@ func InitAllConfigs() {
 			return
 		}
 	}
+	err = achievements.Open(os.O_RDWR)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	defer func(achievements *files.File) {
+		err := achievements.Close()
+		if err != nil {
+			logger.Error(err)
+		}
+	}(&achievements)
+	cachedAchievements = json.Json(achievements.ReadString())
 }
