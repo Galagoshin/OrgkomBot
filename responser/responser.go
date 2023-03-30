@@ -81,6 +81,10 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 			commands.StartPay(chat, message, user)
 		} else if message.Payload["action"] == "pay confirm" {
 			commands.Pay(chat, message, user)
+		} else if message.Payload["action"] == "market" {
+			commands.Market(chat, message, user)
+		} else if message.Payload["action"] == "shop" {
+			commands.Shop(chat, message, user)
 		} else {
 			commands.Menu(chat, message, user, false)
 		}
