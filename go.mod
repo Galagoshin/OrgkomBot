@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/Galagoshin/GoLogger v1.0.1
 	github.com/Galagoshin/GoUtils v1.0.1
-	github.com/Galagoshin/VKGoBot v1.2.1
+	github.com/Galagoshin/VKGoBot v1.3.1
 	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/yeqown/go-qrcode/v2 v2.2.1

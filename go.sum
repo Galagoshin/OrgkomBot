@@ -2,8 +2,8 @@ github.com/Galagoshin/GoLogger v1.0.1 h1:xi6x5wXB1gp8GYmGKUmd5wPpdKb/r5lRd7qc5YY
 github.com/Galagoshin/GoLogger v1.0.1/go.mod h1:uLVfwLUuBL9T4qtbVK4le5mBZc3ZgNaGoK/z+EGhAw0=
 github.com/Galagoshin/GoUtils v1.0.1 h1:fRBQxrcYhs6GO2TPU39QDWnA/9SrH58MFokPh+rla38=
 github.com/Galagoshin/GoUtils v1.0.1/go.mod h1:MsyTwzpdgAClLChVpCWC/k4Zpgf0ky5dCKLVvTZSaCA=
-github.com/Galagoshin/VKGoBot v1.2.1 h1:5R9DISaxN7rbapyjQgSfPm9p+oHHjiEesxh38Fu92c4=
-github.com/Galagoshin/VKGoBot v1.2.1/go.mod h1:rDO8CBTTBue4eMXyjXYTTwyhFFNObVVbv9wAIYdfxLM=
+github.com/Galagoshin/VKGoBot v1.3.1 h1:fTgyLhfX9UcOZ9JvUR4mJFR6lqvfmafOlQG2guWl4IE=
+github.com/Galagoshin/VKGoBot v1.3.1/go.mod h1:rDO8CBTTBue4eMXyjXYTTwyhFFNObVVbv9wAIYdfxLM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=

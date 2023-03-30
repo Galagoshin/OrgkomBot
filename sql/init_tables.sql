@@ -80,3 +80,14 @@ CREATE TABLE IF NOT EXISTS events_visits (
     user_id INTEGER REFERENCES users(id),
     position INTEGER NOT NULL DEFAULT 100
 );
+
+CREATE TABLE IF NOT EXISTS bonus (
+    id SERIAL PRIMARY KEY,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER REFERENCES users(id),
+    liked INTEGER NOT NULL,
+    comment INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS like_bonus ON bonus(liked);
+CREATE INDEX IF NOT EXISTS comment_bonus ON bonus(comment);

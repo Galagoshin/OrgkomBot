@@ -38,6 +38,8 @@ func main() {
 		tasks.EventsCheckerTask.Run()
 		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Routing})
 		events.RegisterEvent(events.Event{Name: events2.HotReloadEvent, Execute: events3.OnHotReload})
+		events.RegisterEvent(events.Event{Name: events2.AddLikeEvent, Execute: events3.OnLike})
+		events.RegisterEvent(events.Event{Name: events2.AddCommentEvent, Execute: events3.OnComment})
 		vk.GetHandler().RegisterResponser(responser.Responser)
 	})))
 	bot.Run()
