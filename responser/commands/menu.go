@@ -56,7 +56,7 @@ func Menu(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, gen bo
 		Payload: keyboards.Payload{
 			"action": "bank",
 		},
-		Text: "Банк 🏦️",
+		Text: "Банк 🏛",
 	})
 	kbrd.AddButton(keyboards.NormalButton{
 		Row:    2,

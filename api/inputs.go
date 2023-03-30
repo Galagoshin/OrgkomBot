@@ -3,8 +3,10 @@ package api
 import "github.com/Galagoshin/VKGoBot/bot/vk/api/users"
 
 const (
-	TypeName  = 0x01
-	TypeGroup = 0x02
+	TypeName      = 0x01
+	TypeGroup     = 0x02
+	TypePayUser   = 0x03
+	TypePayAmount = 0x04
 )
 
 var inputs = make(map[users.User]int)

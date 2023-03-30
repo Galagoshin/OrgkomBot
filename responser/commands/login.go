@@ -35,7 +35,7 @@ func InputGroup(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) 
 		user.Write(api.TypeGroup)
 		return
 	}
-	api.SetLoginName(user, outgoing.Text)
+	api.RemoveLoginName(user)
 	user.Create(login_name, outgoing.Text)
 	chat.SendMessage(chats.Message{Text: "Отлично! Теперь тебе доступны основные функции бота."})
 	Menu(chat, outgoing, user, false)

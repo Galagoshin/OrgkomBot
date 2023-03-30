@@ -33,6 +33,20 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 	case api.TypeGroup:
 		commands.InputGroup(chat, message, user)
 		return
+	case api.TypePayUser:
+		if message.Payload["action"] != nil && message.Payload["action"] == "pay cancel" {
+			commands.Bank(chat, message, user)
+		} else {
+			commands.ChooseAmount(chat, message, user)
+		}
+		return
+	case api.TypePayAmount:
+		if message.Payload["action"] != nil && message.Payload["action"] == "pay cancel" {
+			commands.Bank(chat, message, user)
+		} else {
+			commands.FinishPay(chat, message, user)
+		}
+		return
 	}
 	if user.GetId() == 0 {
 		commands.StartLogin(chat, message, user)
@@ -61,6 +75,12 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 			commands.VoteEvent(chat, message, user)
 		} else if message.Payload["action"] == "achievements" {
 			commands.Achievements(chat, message, user)
+		} else if message.Payload["action"] == "bank" {
+			commands.Bank(chat, message, user)
+		} else if message.Payload["action"] == "pay" {
+			commands.StartPay(chat, message, user)
+		} else if message.Payload["action"] == "pay confirm" {
+			commands.Pay(chat, message, user)
 		} else {
 			commands.Menu(chat, message, user, false)
 		}
