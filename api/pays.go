@@ -49,10 +49,14 @@ func getUserByDomain(domain string) (*User, bool) {
 		logger.Error(errors.New(response_json["error"].(map[string]any)["error_msg"].(string)))
 	}
 	if response_json["response"] != nil {
-		user_id := response_json["response"].([]interface{})[0].([]any)[0].(map[string]any)["id"].(float64)
+		data := response_json["response"].([]any)
+		if len(data) == 0 {
+			return nil, false
+		}
+		user_id := data[0].(map[string]any)["id"].(float64)
 		user := &User{VKUser: users.User(user_id)}
 		user.Init()
-		if user.GetId() == 0 {
+		if user.GetId() != 0 {
 			return user, true
 		} else {
 			return nil, false

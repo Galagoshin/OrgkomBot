@@ -96,6 +96,7 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		Column: 0,
 		Payload: keyboards.Payload{
 			"action": "pay confirm",
+			"amount": amount,
 		},
 		Color: keyboards.GreenColor,
 		Text:  "Да",
@@ -105,11 +106,11 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		Column: 1,
 		Color:  keyboards.RedColor,
 		Payload: keyboards.Payload{
-			"action": "pay cancel",
+			"action": "bank",
 		},
 		Text: "Нет",
 	})
-	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Уверен, что хочешь перевести %d \U0001FA99 участнику @id%d(%s)?", amount, receiver.GetId(), receiver.GetName()), Keyboard: &kbrd})
+	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Уверен, что хочешь перевести %d \U0001FA99 участнику @id%d(%s)?", amount, receiver.VKUser, receiver.GetName()), Keyboard: &kbrd})
 }
 
 func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
@@ -142,7 +143,7 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		Payload: keyboards.Payload{
 			"action": "pay",
 		},
-		Color: keyboards.GreenColor,
+		Color: keyboards.WhiteColor,
 		Text:  "Сделать ещё перевод 💸",
 	})
 	kbrd.AddButton(keyboards.NormalButton{
@@ -154,5 +155,6 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		},
 		Text: "Назад в меню 🔙",
 	})
-	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Переведено %d \U0001FA99 участнику @id%d(%s)", amount, receiver.GetId(), receiver.GetName()), Keyboard: &kbrd})
+	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Переведено %d \U0001FA99 участнику @id%d(%s)", uint(amount), receiver.VKUser, receiver.GetName()), Keyboard: &kbrd})
+	chats.UserChat(receiver.VKUser).SendMessage(chats.Message{Text: fmt.Sprintf("Тебе перевёл %d \U0001FA99 участник @id%d(%s)", uint(amount), user.VKUser, user.GetName()), Keyboard: &kbrd})
 }
