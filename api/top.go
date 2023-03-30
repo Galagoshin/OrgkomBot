@@ -26,20 +26,23 @@ func GetTopByRating() map[*User]float64 {
 			logger.Error(err)
 			return nil
 		}
-		qrarr := strings.Split(qr, "_")
-		owner_id, err := strconv.Atoi(strings.Split(qrarr[0], "photo")[1])
-		if err != nil {
-			logger.Error(err)
-			return map[*User]float64{}
-		}
-		idpic, err := strconv.Atoi(qrarr[1])
-		if err != nil {
-			logger.Error(err)
-			return map[*User]float64{}
-		}
-		qrcode := attachments.Image{
-			OwnerId: owner_id,
-			Id:      uint(idpic),
+		var qrcode attachments.Image
+		if qr != "nil" {
+			qrarr := strings.Split(qr, "_")
+			owner_id, err := strconv.Atoi(strings.Split(qrarr[0], "photo")[1])
+			if err != nil {
+				logger.Error(err)
+				return map[*User]float64{}
+			}
+			idpic, err := strconv.Atoi(qrarr[1])
+			if err != nil {
+				logger.Error(err)
+				return map[*User]float64{}
+			}
+			qrcode = attachments.Image{
+				OwnerId: owner_id,
+				Id:      uint(idpic),
+			}
 		}
 		user := &User{
 			VKUser: users.User(vk),

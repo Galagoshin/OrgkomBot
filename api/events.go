@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"github.com/Galagoshin/GoLogger/logger"
+	"github.com/Galagoshin/GoUtils/events"
 	"github.com/Galagoshin/GoUtils/json"
 	"github.com/Galagoshin/GoUtils/requests"
 	"orgkombot/config"
@@ -164,6 +165,7 @@ func (user *User) Visit(event *Event, position uint) {
 			return
 		}
 	}
+	events.CallAllEvents("EventVisitEvent", event, user, position)
 }
 
 func (event *Event) SetWeight() {

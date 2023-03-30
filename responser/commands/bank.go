@@ -2,9 +2,11 @@ package commands
 
 import (
 	"fmt"
+	"github.com/Galagoshin/GoUtils/events"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/chats"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/keyboards"
 	"orgkombot/api"
+	events2 "orgkombot/events"
 	"strconv"
 )
 
@@ -155,6 +157,7 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		},
 		Text: "Назад в меню 🔙",
 	})
+	events.CallAllEvents(events2.PayEvent, user, receiver, amount)
 	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Переведено %d \U0001FA99 участнику @id%d(%s)", uint(amount), receiver.VKUser, receiver.GetName()), Keyboard: &kbrd})
 	chats.UserChat(receiver.VKUser).SendMessage(chats.Message{Text: fmt.Sprintf("Тебе перевёл %d \U0001FA99 участник @id%d(%s)", uint(amount), user.VKUser, user.GetName()), Keyboard: &kbrd})
 }

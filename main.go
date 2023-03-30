@@ -40,6 +40,11 @@ func main() {
 		events.RegisterEvent(events.Event{Name: events2.HotReloadEvent, Execute: events3.OnHotReload})
 		events.RegisterEvent(events.Event{Name: events2.AddLikeEvent, Execute: events3.OnLike})
 		events.RegisterEvent(events.Event{Name: events2.AddCommentEvent, Execute: events3.OnComment})
+
+		events.RegisterEvent(events.Event{Name: events3.EventVisitEvent, Execute: events3.OnEventVisit})
+		events.RegisterEvent(events.Event{Name: events3.PayEvent, Execute: events3.OnPay})
+		events.RegisterEvent(events.Event{Name: events3.BonusEvent, Execute: events3.OnBonus})
+		events.RegisterEvent(events.Event{Name: events3.GetAchievementEvent, Execute: events3.OnGettingAchievement})
 		vk.GetHandler().RegisterResponser(responser.Responser)
 	})))
 	bot.Run()

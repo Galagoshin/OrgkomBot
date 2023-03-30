@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS achievements (
     id SERIAL PRIMARY KEY,
     owner_id INTEGER REFERENCES users(id),
     achievement_id INTEGER NOT NULL,
-    progress INTEGER NOT NULL DEFAULT 0
+    progress INTEGER NOT NULL DEFAULT 0,
+    completed INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS owner_achievement_index ON achievements(owner_id);
