@@ -94,6 +94,17 @@ func Menu(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User, gen bo
 		},
 		Text: "Рейтинг 🏆",
 	})
+	if user.GetAdminLevel() > 0 {
+		kbrd.AddButton(keyboards.NormalButton{
+			Row:    5,
+			Column: 0,
+			Color:  keyboards.RedColor,
+			Payload: keyboards.Payload{
+				"action": "admin",
+			},
+			Text: "Админ-панель",
+		})
+	}
 	if gen {
 		chat.SendMessage(chats.Message{
 			Text:     "Теперь твой QR сохранён в базе и будет появляться моментально.",

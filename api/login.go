@@ -1,16 +1,16 @@
 package api
 
-var names = make(map[User]string)
+var names = make(map[uint]string)
 
 func SetLoginName(user User, name string) {
-	names[user] = name
+	names[user.id] = name
 }
 
 func GetLoginName(user User) (string, bool) {
-	name, ex := names[user]
+	name, ex := names[user.id]
 	return name, ex
 }
 
 func RemoveLoginName(user User) {
-	delete(names, user)
+	delete(names, user.id)
 }

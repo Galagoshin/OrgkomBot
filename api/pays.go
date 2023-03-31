@@ -11,19 +11,19 @@ import (
 	"strings"
 )
 
-var pays = make(map[User]*User)
+var pays = make(map[uint]*User)
 
 func SetPayUser(user User, receiver *User) {
-	pays[user] = receiver
+	pays[user.id] = receiver
 }
 
 func GetPayUser(user User) (*User, bool) {
-	name, ex := pays[user]
+	name, ex := pays[user.id]
 	return name, ex
 }
 
 func RemovePayUser(user User) {
-	delete(pays, user)
+	delete(pays, user.id)
 }
 
 func getUserByDomain(domain string) (*User, bool) {

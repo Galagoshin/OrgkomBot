@@ -18,7 +18,7 @@ type User struct {
 	qr         attachments.Image
 	coins      uint
 	rating     float64
-	admin      bool
+	admin      uint
 	banned     bool
 	subscribed bool
 }
@@ -37,7 +37,7 @@ func (user *User) Delete() {
 	user.name = ""
 	user.group = ""
 	user.qr = attachments.Image{}
-	user.admin = false
+	user.admin = 0
 	user.banned = false
 	user.subscribed = false
 }
@@ -66,7 +66,7 @@ func (user *User) Init() {
 	var rating float64
 	var id, vk, coins, admin, banned, subscribed uint
 	var name, group, qr string
-	err := db.Instance.QueryRow(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, is_admin, is_banned, is_subscribed FROM users WHERE vk = $1;", user.VKUser).Scan(&id, &vk, &coins, &rating, &name, &group, &qr, &admin, &banned, &subscribed)
+	err := db.Instance.QueryRow(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, admin, is_banned, is_subscribed FROM users WHERE vk = $1;", user.VKUser).Scan(&id, &vk, &coins, &rating, &name, &group, &qr, &admin, &banned, &subscribed)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
 			return
@@ -81,7 +81,51 @@ func (user *User) Init() {
 	user.coins = coins
 	user.rating = rating
 	user.banned = banned == 1
-	user.admin = admin == 1
+	user.admin = admin
+	user.subscribed = subscribed == 1
+	var qrcode attachments.Image
+	if qr == "nil" {
+		user.qr = attachments.Image{}
+	} else {
+		qrarr := strings.Split(qr, "_")
+		owner_id, err := strconv.Atoi(strings.Split(qrarr[0], "photo")[1])
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		idpic, err := strconv.Atoi(qrarr[1])
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		qrcode = attachments.Image{
+			OwnerId: owner_id,
+			Id:      uint(idpic),
+		}
+	}
+	user.qr = qrcode
+}
+
+func (user *User) InitById() {
+	var rating float64
+	var id, vk, coins, admin, banned, subscribed uint
+	var name, group, qr string
+	err := db.Instance.QueryRow(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, admin, is_banned, is_subscribed FROM users WHERE id = $1;", user.id).Scan(&id, &vk, &coins, &rating, &name, &group, &qr, &admin, &banned, &subscribed)
+	if err != nil {
+		if err.Error() == "no rows in result set" {
+			return
+		} else {
+			logger.Error(err)
+			return
+		}
+	}
+	user.id = id
+	user.name = name
+	user.group = group
+	user.coins = coins
+	user.rating = rating
+	user.banned = banned == 1
+	user.admin = admin
 	user.subscribed = subscribed == 1
 	var qrcode attachments.Image
 	if qr == "nil" {
@@ -194,8 +238,19 @@ func (user *User) IsBanned() bool {
 	return user.banned
 }
 
-func (user *User) IsAdmin() bool {
+func (user *User) GetAdminLevel() uint {
 	return user.admin
+}
+
+func (user *User) SetAdminLevel(value uint) {
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET admin = $1 WHERE id = $2;", value, user.id).Scan()
+	if err != nil {
+		if err.Error() != "no rows in result set" {
+			logger.Error(err)
+			return
+		}
+	}
+	user.admin = value
 }
 
 func (user *User) Subscribe(value bool) {

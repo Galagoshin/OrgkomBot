@@ -7,6 +7,7 @@ const (
 	TypeGroup     = 0x02
 	TypePayUser   = 0x03
 	TypePayAmount = 0x04
+	Scanner       = 0x05
 )
 
 var inputs = make(map[users.User]int)

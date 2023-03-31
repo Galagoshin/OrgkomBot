@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
      qr VARCHAR(80) NOT NULL DEFAULT 'nil',
      coins INTEGER NOT NULL DEFAULT 0,
      rating REAL NOT NULL DEFAULT 0,
-     is_admin INTEGER NOT NULL DEFAULT 0,
+     admin INTEGER NOT NULL DEFAULT 0,
      is_banned INTEGER NOT NULL DEFAULT 0,
      is_subscribed INTEGER NOT NULL DEFAULT 1,
      notifications INTEGER NOT NULL DEFAULT 1
@@ -92,3 +92,11 @@ CREATE TABLE IF NOT EXISTS bonus (
 
 CREATE INDEX IF NOT EXISTS like_bonus ON bonus(liked);
 CREATE INDEX IF NOT EXISTS comment_bonus ON bonus(comment);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id SERIAL PRIMARY KEY,
+    admin_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id),
+    amount INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);

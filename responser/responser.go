@@ -47,6 +47,13 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 			commands.FinishPay(chat, message, user)
 		}
 		return
+	case api.Scanner:
+		if message.Payload["action"] != nil && message.Payload["action"] == "scanner stop" {
+			commands.StopScanner(chat, message, user)
+		} else {
+			commands.Scan(chat, message, user)
+		}
+		return
 	}
 	if user.GetId() == 0 {
 		commands.StartLogin(chat, message, user)
@@ -85,10 +92,28 @@ func Responser(chat chats.Chat, message chats.OutgoingMessage) {
 			commands.Market(chat, message, user)
 		} else if message.Payload["action"] == "shop" {
 			commands.Shop(chat, message, user)
+		} else if message.Payload["action"] == "admin" {
+			commands.AdminMenu(chat, message, user)
+		} else if message.Payload["action"] == "give_admin" {
+			commands.GiveAdmin(chat, message, user)
+		} else if message.Payload["action"] == "finish_event" {
+			if message.Payload["event"] != nil {
+				commands.FinishEvent(chat, message, user)
+			} else {
+				commands.FinishEventInfo(chat, message, user)
+			}
+		} else if message.Payload["action"] == "scanner" {
+			commands.StartScanner(chat, message, user)
 		} else {
 			commands.Menu(chat, message, user, false)
 		}
-		return
+	} else {
+		if strings.Split(message.Text, " ")[0] == "/give_admin" {
+			commands.GiveAdmin(chat, message, user)
+		} else if strings.Split(message.Text, " ")[0] == "/scanner" {
+			commands.StartScanner(chat, message, user)
+		} else {
+			commands.Menu(chat, message, user, false)
+		}
 	}
-	commands.Menu(chat, message, user, false)
 }
