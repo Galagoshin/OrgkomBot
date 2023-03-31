@@ -7,9 +7,7 @@ import (
 )
 
 func OnEventVisit(args ...any) {
-	//event    := args[0].(*api.Event)
 	user := args[1].(*api.User)
-	//position := args[2].(uint)
 	user_chat := chats.UserChat(user.VKUser)
 	event1 := user.GetAchievement(api.EVENT_1)
 	event2 := user.GetAchievement(api.EVENT_2)

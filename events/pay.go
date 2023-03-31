@@ -9,8 +9,6 @@ import (
 func OnPay(args ...any) {
 	user := args[0].(api.User)
 	user.Init()
-	//receiver := args[1].(*api.User)
-	//amount   := args[2].(uint)
 	user_chat := chats.UserChat(user.VKUser)
 	bank1 := user.GetAchievement(api.BANK_1)
 	bank2 := user.GetAchievement(api.BANK_2)
