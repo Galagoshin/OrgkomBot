@@ -17,7 +17,7 @@ import (
 	"orgkombot/tasks"
 )
 
-const VERSION = "1.0.0-alpha5"
+const VERSION = "1.0.0-beta1"
 
 func main() {
 	logger.Print(fmt.Sprintf("OrgkomBot v%s has been loaded (%f s.)", VERSION, time.MeasureExecution(func() {
@@ -40,8 +40,8 @@ func main() {
 		events.RegisterEvent(events.Event{Name: events2.HotReloadEvent, Execute: events3.OnHotReload})
 		events.RegisterEvent(events.Event{Name: events2.AddLikeEvent, Execute: events3.OnLike})
 		events.RegisterEvent(events.Event{Name: events2.AddCommentEvent, Execute: events3.OnComment})
-
 		events.RegisterEvent(events.Event{Name: events3.EventVisitEvent, Execute: events3.OnEventVisit})
+		events.RegisterEvent(events.Event{Name: events3.EventCompleteEvent, Execute: events3.OnEventComplete})
 		events.RegisterEvent(events.Event{Name: events3.PayEvent, Execute: events3.OnPay})
 		events.RegisterEvent(events.Event{Name: events3.BonusEvent, Execute: events3.OnBonus})
 		events.RegisterEvent(events.Event{Name: events3.GetAchievementEvent, Execute: events3.OnGettingAchievement})

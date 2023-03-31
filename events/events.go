@@ -10,4 +10,5 @@ const (
 	BonusEvent          = events.EventName("BonusEvent")
 	OpenCaseEvent       = events.EventName("OpenCaseEvent")
 	GetAchievementEvent = events.EventName("OpenCaseEvent")
+	EventCompleteEvent  = events.EventName("EventCompleteEvent")
 )

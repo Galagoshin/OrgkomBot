@@ -23,6 +23,58 @@ type User struct {
 	subscribed bool
 }
 
+func GetAllSubscribedUsers() map[*User]uint {
+	result := make(map[*User]uint)
+	rows, err := db.Instance.Query(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, admin, is_banned, is_subscribed FROM users WHERE is_subscribed = 1;")
+	if err != nil {
+		logger.Error(err)
+		return map[*User]uint{}
+	}
+	for rows.Next() {
+		var rating float64
+		var id, vk, coins, admin, banned, subscribed uint
+		var name, group, qr string
+		err := rows.Scan(&id, &vk, &coins, &rating, &name, &group, &qr, &admin, &banned, &subscribed)
+		if err != nil {
+			logger.Error(err)
+			return nil
+		}
+		var qrcode attachments.Image
+		if qr != "nil" {
+			qrarr := strings.Split(qr, "_")
+			owner_id, err := strconv.Atoi(strings.Split(qrarr[0], "photo")[1])
+			if err != nil {
+				logger.Error(err)
+				return map[*User]uint{}
+			}
+			idpic, err := strconv.Atoi(qrarr[1])
+			if err != nil {
+				logger.Error(err)
+				return map[*User]uint{}
+			}
+			qrcode = attachments.Image{
+				OwnerId: owner_id,
+				Id:      uint(idpic),
+			}
+		}
+		user := &User{
+			VKUser: users.User(vk),
+			id:     id,
+			name:   name,
+			group:  group,
+			qr:     qrcode,
+			coins:  coins,
+			rating: rating,
+			banned: banned == 1,
+			admin:  admin,
+		}
+		if !user.IsBanned() {
+			result[user] = id
+		}
+	}
+	return result
+}
+
 func (user *User) Delete() {
 	err := db.Instance.QueryRow(context.Background(), "DELETE FROM users WHERE vk = $1;", user.VKUser).Scan()
 	if err != nil {
@@ -155,7 +207,7 @@ func (user *User) Ban(value bool) {
 	if !value {
 		val = 0
 	}
-	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET is_banned = $1;", val).Scan()
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET is_banned = $1 WHERE id = $2;", val, user.id).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
@@ -166,7 +218,7 @@ func (user *User) Ban(value bool) {
 }
 
 func (user *User) SetCoins(value uint) {
-	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET coins = $1;", value).Scan()
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET coins = $1 WHERE id = $2;", value, user.id).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
@@ -193,7 +245,7 @@ func (user *User) GetCoins() uint {
 }
 
 func (user *User) SetRating(value float64) {
-	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET rating = $1;", value).Scan()
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET rating = $1 WHERE id = $2;", value, user.id).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
@@ -220,7 +272,7 @@ func (user *User) GetRating() float64 {
 }
 
 func (user *User) SetName(value string) {
-	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET full_name = $1;", value).Scan()
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET full_name = $1 WHERE id = $2;", value, user.id).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
@@ -258,7 +310,7 @@ func (user *User) Subscribe(value bool) {
 	if !value {
 		val = 0
 	}
-	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET is_subscribed = $1;", val).Scan()
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET is_subscribed = $1 WHERE id = $2;", val, user.id).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
@@ -273,7 +325,7 @@ func (user *User) IsSubscribed() bool {
 }
 
 func (user *User) SetQR(image attachments.Image) {
-	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET qr = $1;", image.BuildString()).Scan()
+	err := db.Instance.QueryRow(context.Background(), "UPDATE users SET qr = $1 WHERE id = $2;", image.BuildString(), user.id).Scan()
 	if err != nil {
 		if err.Error() != "no rows in result set" {
 			logger.Error(err)
