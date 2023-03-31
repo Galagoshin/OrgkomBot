@@ -8,6 +8,7 @@ import (
 	"orgkombot/api"
 	events2 "orgkombot/events"
 	"strconv"
+	"strings"
 )
 
 func Bank(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
@@ -101,7 +102,7 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 			"amount": amount,
 		},
 		Color: keyboards.GreenColor,
-		Text:  "Да",
+		Text:  "Да ✅",
 	})
 	kbrd.AddButton(keyboards.NormalButton{
 		Row:    0,
@@ -110,9 +111,12 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		Payload: keyboards.Payload{
 			"action": "bank",
 		},
-		Text: "Нет",
+		Text: "Нет ❌",
 	})
-	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Уверен, что хочешь перевести %d \U0001FA99 участнику @id%d(%s)?", amount, receiver.VKUser, receiver.GetName()), Keyboard: &kbrd})
+	names := strings.Split(user.GetName(), " ")
+	first_name := strings.Replace(strings.ToLower(names[0]), string([]rune(strings.ToLower(names[0]))[:1]), strings.ToUpper(string([]rune(names[0])[:1])), 1)
+	last_name := strings.Replace(strings.ToLower(names[1]), string([]rune(strings.ToLower(names[1]))[:1]), strings.ToUpper(string([]rune(names[1])[:1])), 1)
+	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Уверен, что хочешь перевести %d \U0001FA99 участнику @id%d(%s %s)?", amount, receiver.VKUser, first_name, last_name), Keyboard: &kbrd})
 }
 
 func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
@@ -159,6 +163,12 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		Text: "Назад в меню 🔙",
 	})
 	events.CallAllEvents(events2.PayEvent, user, receiver, amount)
-	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Переведено %d \U0001FA99 участнику @id%d(%s)", uint(amount), receiver.VKUser, receiver.GetName()), Keyboard: &kbrd})
-	chats.UserChat(receiver.VKUser).SendMessage(chats.Message{Text: fmt.Sprintf("Тебе перевёл %d \U0001FA99 участник @id%d(%s)", uint(amount), user.VKUser, user.GetName())})
+	names1 := strings.Split(receiver.GetName(), " ")
+	names2 := strings.Split(user.GetName(), " ")
+	first_name1 := strings.Replace(strings.ToLower(names1[0]), string([]rune(strings.ToLower(names1[0]))[:1]), strings.ToUpper(string([]rune(names1[0])[:1])), 1)
+	last_name1 := strings.Replace(strings.ToLower(names1[1]), string([]rune(strings.ToLower(names1[1]))[:1]), strings.ToUpper(string([]rune(names1[1])[:1])), 1)
+	first_name2 := strings.Replace(strings.ToLower(names2[0]), string([]rune(strings.ToLower(names2[0]))[:1]), strings.ToUpper(string([]rune(names2[0])[:1])), 1)
+	last_name2 := strings.Replace(strings.ToLower(names2[1]), string([]rune(strings.ToLower(names2[1]))[:1]), strings.ToUpper(string([]rune(names2[1])[:1])), 1)
+	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Переведено %d \U0001FA99 участнику @id%d(%s %s)", uint(amount), receiver.VKUser, first_name1, last_name1), Keyboard: &kbrd})
+	chats.UserChat(receiver.VKUser).SendMessage(chats.Message{Text: fmt.Sprintf("Тебе перевёл %d \U0001FA99 участник @id%d(%s %s)", uint(amount), user.VKUser, first_name2, last_name2)})
 }

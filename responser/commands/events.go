@@ -12,6 +12,14 @@ import (
 	"strings"
 )
 
+var smiles = map[int]string{
+	1: "&#49;&#8419;",
+	2: "&#50;&#8419;",
+	3: "&#51;&#8419;",
+	4: "&#52;&#8419;",
+	5: "&#53;&#8419;",
+}
+
 func VoteEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	if outgoing.Payload["votes"] != nil {
 		votes := strings.Split(outgoing.Payload["votes"].(string), ",")
@@ -59,7 +67,7 @@ func VoteEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 						"action": fmt.Sprintf("vote %d", event_id),
 						"votes":  fmt.Sprintf("%d", i),
 					},
-					Text: fmt.Sprintf("%d", i),
+					Text: smiles[i],
 				})
 			}
 			chat.SendMessage(chats.Message{Text: "Как оценишь мероприятие?", Keyboard: &kbrd})
@@ -82,7 +90,7 @@ func VoteEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 						"action": fmt.Sprintf("vote %d", event_id),
 						"votes":  fmt.Sprintf("%s,%d", outgoing.Payload["votes"].(string), i),
 					},
-					Text: fmt.Sprintf("%d", i),
+					Text: smiles[i],
 				})
 			}
 			chat.SendMessage(chats.Message{Text: "Как тебе организация мероприятия?", Keyboard: &kbrd})
@@ -105,7 +113,7 @@ func VoteEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 						"action": fmt.Sprintf("vote %d", event_id),
 						"votes":  fmt.Sprintf("%s,%d", outgoing.Payload["votes"].(string), i),
 					},
-					Text: fmt.Sprintf("%d", i),
+					Text: smiles[i],
 				})
 			}
 			chat.SendMessage(chats.Message{Text: "Придёшь ли ты на это мероприятие в следующем году?", Keyboard: &kbrd})

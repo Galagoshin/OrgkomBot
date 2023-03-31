@@ -52,6 +52,7 @@ func Scan(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		chat.SendMessage(chats.Message{
 			Text: "Произошла какая-то ошибка при выдаче валюты.",
 		})
+		return
 	}
 	if api.GiveVisitByToken(&user, event, token, amount, position) {
 		chat.SendMessage(chats.Message{
@@ -73,7 +74,7 @@ func StartScanner(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User
 	}
 	printUsage := func() {
 		chat.SendMessage(chats.Message{
-			Text: fmt.Sprintf("Usage: /scanner <amount> <event> <position>\nПример для выдачи 100 валюты за посещение на \"%s\": /scanner 100 1 100\n\nСписок меро:\n%s", all_events[1].Name, events_list),
+			Text: fmt.Sprintf("Usage: /scanner <amount> <event> <position>\nПример для выдачи 100 валюты за посещение на \"%s\": /scanner 100 1 50\n\nСписок меро:\n%s\n\nПодсказка: если начисление валюты идёт за посещение и только, то <position> должен быть равен кол-ву участников на мероприятии. В остальном <position> - это место, занятое на мероприятии.", all_events[1].Name, events_list),
 		})
 	}
 	if user.GetAdminLevel() < 1 {
