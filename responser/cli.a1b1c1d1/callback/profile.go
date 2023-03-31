@@ -4,7 +4,7 @@ import (
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/chats"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/users"
 	"orgkombot/api"
-	"orgkombot/responser/commands"
+	commands2 "orgkombot/responser/cli.a1b1c1d1/commands"
 )
 
 func Subscribe(args ...any) {
@@ -13,6 +13,6 @@ func Subscribe(args ...any) {
 	user := api.User{VKUser: users.User(chat.GetId())}
 	user.Init()
 	user.Subscribe(!user.IsSubscribed())
-	commands.Profile(chat, chats.OutgoingMessage{}, user, true, false)
+	commands2.Profile(chat, chats.OutgoingMessage{}, user, true, false)
 	callback.SendAnswer(chats.CallbackAnswer{Text: "Изменения профиля сохраненены."})
 }

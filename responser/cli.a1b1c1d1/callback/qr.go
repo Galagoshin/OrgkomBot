@@ -4,7 +4,7 @@ import (
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/chats"
 	"github.com/Galagoshin/VKGoBot/bot/vk/api/users"
 	"orgkombot/api"
-	"orgkombot/responser/commands"
+	commands2 "orgkombot/responser/cli.a1b1c1d1/commands"
 )
 
 func GenQR(args ...any) {
@@ -16,8 +16,8 @@ func GenQR(args ...any) {
 	user.Subscribe(!user.IsSubscribed())
 	callback.SendAnswer(chats.CallbackAnswer{Text: "Мы генерируем тебе QR, он появится через 2 секунды."})
 	if payload["next"] == "profile" {
-		go commands.QR(chat, chats.OutgoingMessage{}, user, true, true)
+		go commands2.QR(chat, chats.OutgoingMessage{}, user, true, true)
 	} else {
-		go commands.QR(chat, chats.OutgoingMessage{}, user, false, true)
+		go commands2.QR(chat, chats.OutgoingMessage{}, user, false, true)
 	}
 }

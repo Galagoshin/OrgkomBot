@@ -13,11 +13,11 @@ import (
 	"orgkombot/db"
 	events3 "orgkombot/events"
 	"orgkombot/responser"
-	"orgkombot/responser/callback"
+	callback2 "orgkombot/responser/cli.a1b1c1d1/callback"
 	"orgkombot/tasks"
 )
 
-const VERSION = "1.0.0-rc1"
+const VERSION = "Branch/custom-clients"
 
 func main() {
 	logger.Print(fmt.Sprintf("OrgkomBot v%s has been loaded (%f s.)", VERSION, time.MeasureExecution(func() {
@@ -36,7 +36,7 @@ func main() {
 		tasks.AutoStatusTask.Run()
 		tasks.WidgetTask.Run()
 		tasks.EventsCheckerTask.Run()
-		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback.Routing})
+		events.RegisterEvent(events.Event{Name: events2.MessageCallbackEvent, Execute: callback2.Routing})
 		events.RegisterEvent(events.Event{Name: events2.HotReloadEvent, Execute: events3.OnHotReload})
 		events.RegisterEvent(events.Event{Name: events2.AddLikeEvent, Execute: events3.OnLike})
 		events.RegisterEvent(events.Event{Name: events2.AddCommentEvent, Execute: events3.OnComment})
