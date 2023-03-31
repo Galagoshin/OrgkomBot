@@ -64,7 +64,7 @@ func GiveVisitByToken(admin *User, event *Event, tokenString string, amount, pos
 	if user_token_strct, ok := token.Claims.(*UserQR); ok && token.Valid {
 		user := &User{id: user_token_strct.Id}
 		user.InitById()
-		if user.IsVisited(event) {
+		if !user.IsVisited(event) {
 			user.AddCoins(amount)
 			user.Visit(event, position)
 			CreateTransaction(admin, user, amount)
