@@ -7,7 +7,7 @@ import (
 )
 
 var EventsCheckerTask = &scheduler.RepeatingTask{
-	Duration:   time.Second,
+	Duration:   time.Minute,
 	OnComplete: EventsChecker,
 }
 

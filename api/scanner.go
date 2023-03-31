@@ -5,22 +5,52 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var scanners = make(map[uint]uint)
+var scanners_amount = make(map[uint]uint)
 
 func SetScannerAmount(user User, amount uint) {
-	scanners[user.id] = amount
+	scanners_amount[user.id] = amount
 }
 
 func GetScannerAmount(user User) (uint, bool) {
-	amount, ex := scanners[user.id]
+	amount, ex := scanners_amount[user.id]
 	return amount, ex
 }
 
 func RemoveScannerAmount(user User) {
-	delete(scanners, user.id)
+	delete(scanners_amount, user.id)
 }
 
-func GiveCoinsByToken(admin *User, tokenString string, amount uint) bool {
+var scanners_position = make(map[uint]uint)
+
+func SetScannerPosition(user User, position uint) {
+	scanners_position[user.id] = position
+}
+
+func GetScannerPosition(user User) (uint, bool) {
+	position, ex := scanners_position[user.id]
+	return position, ex
+}
+
+func RemoveScannerPosition(user User) {
+	delete(scanners_position, user.id)
+}
+
+var scanners_event = make(map[uint]*Event)
+
+func SetScannerEvent(user User, event *Event) {
+	scanners_event[user.id] = event
+}
+
+func GetScannerEvent(user User) (*Event, bool) {
+	event, ex := scanners_event[user.id]
+	return event, ex
+}
+
+func RemoveScannerEvent(user User) {
+	delete(scanners_event, user.id)
+}
+
+func GiveVisitByToken(admin *User, event *Event, tokenString string, amount, position uint) bool {
 	type UserQR struct {
 		Id uint `json:"id"`
 		jwt.RegisteredClaims
@@ -34,9 +64,14 @@ func GiveCoinsByToken(admin *User, tokenString string, amount uint) bool {
 	if user_token_strct, ok := token.Claims.(*UserQR); ok && token.Valid {
 		user := &User{id: user_token_strct.Id}
 		user.InitById()
-		user.AddCoins(amount)
-		CreateTransaction(admin, user, amount)
-		return true
+		if user.IsVisited(event) {
+			user.AddCoins(amount)
+			user.Visit(event, position)
+			CreateTransaction(admin, user, amount)
+			return true
+		} else {
+			return false
+		}
 	} else {
 		return false
 	}

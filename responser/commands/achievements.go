@@ -8,7 +8,7 @@ import (
 
 func Achievements(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	data := user.GetAchievements()
-	msg := "Твои достижения: \n"
+	msg := "За получение достижений, ты получаешь 10 🏆 и коины.\nТвои достижения: \n"
 	for _, achievement := range data {
 		if achievement.GetId() < 0xC {
 			if achievement.GetProgress() == achievement.GetLimit() {

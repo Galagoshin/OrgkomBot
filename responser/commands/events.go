@@ -128,12 +128,20 @@ func VoteEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 func EventMore(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	if outgoing.Payload["event"] != nil {
 		event_id := uint8(outgoing.Payload["event"].(float64))
+		found := false
 		var event *api.Event
 		for _, event_el := range api.GetAllEvents() {
 			if event_el.Id == event_id {
 				event = event_el
+				found = true
 				break
 			}
+		}
+		if !found {
+			chat.SendMessage(chats.Message{
+				Text: "Мероприятие не найдено",
+			})
+			return
 		}
 		weight := "не определён"
 		if event.IsCompleted() {

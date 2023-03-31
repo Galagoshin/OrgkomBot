@@ -172,6 +172,7 @@ func (user *User) InitById() {
 		}
 	}
 	user.id = id
+	user.VKUser = users.User(vk)
 	user.name = name
 	user.group = group
 	user.coins = coins

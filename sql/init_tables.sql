@@ -77,7 +77,7 @@ CREATE INDEX IF NOT EXISTS ratings_event_index ON events_ratings(event_id);
 
 CREATE TABLE IF NOT EXISTS events_visits (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER REFERENCES events(id),
+    event_id INTEGER NOT NULL,
     user_id INTEGER REFERENCES users(id),
     position INTEGER NOT NULL DEFAULT 100
 );

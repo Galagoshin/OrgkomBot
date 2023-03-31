@@ -7,7 +7,8 @@ import (
 )
 
 func OnPay(args ...any) {
-	user := args[0].(*api.User)
+	user := args[0].(api.User)
+	user.Init()
 	//receiver := args[1].(*api.User)
 	//amount   := args[2].(uint)
 	user_chat := chats.UserChat(user.VKUser)

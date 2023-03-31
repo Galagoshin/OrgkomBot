@@ -72,7 +72,7 @@ func ChooseAmount(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User
 func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	amount, err := strconv.Atoi(outgoing.Text)
 	receiver, exists := api.GetPayUser(user)
-	if !exists {
+	if !exists || receiver.GetId() == user.GetId() {
 		chat.SendMessage(chats.Message{Text: "При переводе произошла какая-то ошибка."})
 		return
 	}
@@ -81,8 +81,8 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		user.Write(api.TypePayAmount)
 		return
 	}
-	if amount <= 0 && amount > 1000000 {
-		chat.SendMessage(chats.Message{Text: "Неправильный формат. Нужно ввести число > 0 && < 0. Попробуй ещё раз.\n\nНапример: 5"})
+	if amount <= 0 || amount > 1000000 {
+		chat.SendMessage(chats.Message{Text: "Неправильный формат. Нужно ввести число > 0. Попробуй ещё раз.\n\nНапример: 5"})
 		user.Write(api.TypePayAmount)
 		return
 	}
@@ -118,7 +118,7 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	receiver, exists := api.GetPayUser(user)
 	api.RemovePayUser(user)
-	if !exists || outgoing.Payload["amount"] == nil {
+	if !exists || receiver.GetId() == user.GetId() || outgoing.Payload["amount"] == nil {
 		chat.SendMessage(chats.Message{Text: "При переводе произошла какая-то ошибка."})
 		return
 	}
@@ -127,7 +127,7 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		chat.SendMessage(chats.Message{Text: "При переводе произошла какая-то ошибка."})
 		return
 	}
-	if amount <= 0 && amount > 1000000 {
+	if amount <= 0 || amount > 1000000 {
 		chat.SendMessage(chats.Message{Text: "При переводе произошла какая-то ошибка."})
 		return
 	}
@@ -135,6 +135,7 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		chat.SendMessage(chats.Message{Text: "При переводе произошла какая-то ошибка."})
 		return
 	}
+	receiver.Init()
 	user.ReduceCoins(uint(amount))
 	receiver.AddCoins(uint(amount))
 	kbrd := keyboards.StaticKeyboard{}
@@ -159,5 +160,5 @@ func Pay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	})
 	events.CallAllEvents(events2.PayEvent, user, receiver, amount)
 	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Переведено %d \U0001FA99 участнику @id%d(%s)", uint(amount), receiver.VKUser, receiver.GetName()), Keyboard: &kbrd})
-	chats.UserChat(receiver.VKUser).SendMessage(chats.Message{Text: fmt.Sprintf("Тебе перевёл %d \U0001FA99 участник @id%d(%s)", uint(amount), user.VKUser, user.GetName()), Keyboard: &kbrd})
+	chats.UserChat(receiver.VKUser).SendMessage(chats.Message{Text: fmt.Sprintf("Тебе перевёл %d \U0001FA99 участник @id%d(%s)", uint(amount), user.VKUser, user.GetName())})
 }

@@ -13,6 +13,8 @@ import (
 
 func StopScanner(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	api.RemoveScannerAmount(user)
+	api.RemoveScannerPosition(user)
+	api.RemoveScannerEvent(user)
 	AdminMenu(chat, outgoing, user)
 }
 
@@ -25,6 +27,8 @@ func Scan(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	}
 	token := outgoing.Text
 	amount, exists := api.GetScannerAmount(user)
+	position, exists2 := api.GetScannerPosition(user)
+	event, exists3 := api.GetScannerEvent(user)
 	user.Write(api.Scanner)
 	if !exists {
 		chat.SendMessage(chats.Message{
@@ -32,22 +36,44 @@ func Scan(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		})
 		return
 	}
-	if api.GiveCoinsByToken(&user, token, amount) {
+	if !exists2 {
+		chat.SendMessage(chats.Message{
+			Text: "Произошла какая-то ошибка при выдаче валюты.",
+		})
+		return
+	}
+	if !exists3 {
+		chat.SendMessage(chats.Message{
+			Text: "Произошла какая-то ошибка при выдаче валюты.",
+		})
+		return
+	}
+	if event.IsCompleted() {
+		chat.SendMessage(chats.Message{
+			Text: "Произошла какая-то ошибка при выдаче валюты.",
+		})
+	}
+	if api.GiveVisitByToken(&user, event, token, amount, position) {
 		chat.SendMessage(chats.Message{
 			Text: "Валюта успешно выдана.",
 		})
 	} else {
 		chat.SendMessage(chats.Message{
-			Text: "Некорректный токен! Возможно, QR был плохо отсканирован.",
+			Text: "Некорректный токен! Возможно, QR был плохо отсканирован, либо уже использовался.",
 		})
 	}
 }
 
 func StartScanner(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 	args := strings.Split(outgoing.Text, " ")
+	events_list := ""
+	all_events := api.GetAllEvents()
+	for i, event := range all_events {
+		events_list += fmt.Sprintf("%d. %s\n", i, event.Name)
+	}
 	printUsage := func() {
 		chat.SendMessage(chats.Message{
-			Text: "Usage: /scanner <amount>",
+			Text: fmt.Sprintf("Usage: /scanner <amount> <event> <position>\nПример для выдачи 100 валюты за посещение на \"%s\": /scanner 100 1 100\n\nСписок меро:\n%s", all_events[1].Name, events_list),
 		})
 	}
 	if user.GetAdminLevel() < 1 {
@@ -56,14 +82,47 @@ func StartScanner(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User
 		})
 		return
 	}
-	if len(args) == 2 {
+	if len(args) == 4 {
 		amount, err := strconv.Atoi(args[1])
 		if err != nil {
 			printUsage()
 			return
 		}
+		event_id, err := strconv.Atoi(args[2])
+		if err != nil {
+			printUsage()
+			return
+		}
+		position, err := strconv.Atoi(args[3])
+		if err != nil {
+			printUsage()
+			return
+		}
+		if position <= 0 || position >= 150 {
+			printUsage()
+			return
+		}
+		if amount <= 0 {
+			printUsage()
+			return
+		}
+		found := false
+		var event *api.Event
+		for _, event_el := range api.GetAllEvents() {
+			if event_el.Id == uint8(event_id) {
+				event = event_el
+				found = true
+				break
+			}
+		}
+		if !found {
+			printUsage()
+			return
+		}
 		user.Write(api.Scanner)
 		api.SetScannerAmount(user, uint(amount))
+		api.SetScannerPosition(user, uint(position))
+		api.SetScannerEvent(user, event)
 		kbrd := keyboards.StaticKeyboard{}
 		kbrd.Init()
 		kbrd.AddButton(keyboards.NormalButton{
@@ -127,7 +186,7 @@ func FinishEvent(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User)
 		})
 		return
 	}
-	event_id := outgoing.Payload["event"]
+	event_id := uint8(outgoing.Payload["event"].(float64))
 	found := false
 	var event *api.Event
 	for _, event_el := range api.GetAllEvents() {
