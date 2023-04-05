@@ -15,6 +15,9 @@ func OnComment(args ...any) {
 	chat := chats.UserChat(comment.Commentator)
 	user := &api.User{VKUser: users.User(comment.Commentator)}
 	user.Init()
+	if user.GetId() == 0 {
+		return
+	}
 	obj := comment.CommentObject
 	post := attachments.Post{
 		Id:        obj.GetId(),

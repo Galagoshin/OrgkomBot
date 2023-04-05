@@ -10,12 +10,12 @@ import (
 	"strings"
 )
 
-func GetTopByRating() map[*User]float64 {
-	result := make(map[*User]float64)
+func GetTopByRating() []*User {
+	result := []*User{}
 	rows, err := db.Instance.Query(context.Background(), "SELECT id, vk, coins, rating, full_name, user_group, qr, admin, is_banned, is_subscribed FROM users ORDER BY rating DESC LIMIT 10;")
 	if err != nil {
 		logger.Error(err)
-		return map[*User]float64{}
+		return []*User{}
 	}
 	for rows.Next() {
 		var rating float64
@@ -32,12 +32,12 @@ func GetTopByRating() map[*User]float64 {
 			owner_id, err := strconv.Atoi(strings.Split(qrarr[0], "photo")[1])
 			if err != nil {
 				logger.Error(err)
-				return map[*User]float64{}
+				return []*User{}
 			}
 			idpic, err := strconv.Atoi(qrarr[1])
 			if err != nil {
 				logger.Error(err)
-				return map[*User]float64{}
+				return []*User{}
 			}
 			qrcode = attachments.Image{
 				OwnerId: owner_id,
@@ -56,7 +56,7 @@ func GetTopByRating() map[*User]float64 {
 			admin:  admin,
 		}
 		if !user.IsBanned() {
-			result[user] = rating
+			result = append(result, user)
 		}
 	}
 	return result

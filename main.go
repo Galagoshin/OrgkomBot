@@ -17,7 +17,7 @@ import (
 	"orgkombot/tasks"
 )
 
-const VERSION = "v1.0.0"
+const VERSION = "v1.0.1"
 
 func main() {
 	logger.Print(fmt.Sprintf("OrgkomBot v%s has been loaded (%f s.)", VERSION, time.MeasureExecution(func() {

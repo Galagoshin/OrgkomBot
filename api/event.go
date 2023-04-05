@@ -154,7 +154,7 @@ func (user *User) VoteEvent(event *Event, general, organization, conversion int)
 
 func (event *Event) IsVoteOpen() bool {
 	var val uint
-	return db.Instance.QueryRow(context.Background(), "SELECT id FROM events WHERE created_at > now() - interval '1 day' AND id = $1;", event.Id).Scan(&val) == nil
+	return db.Instance.QueryRow(context.Background(), "SELECT id FROM events WHERE created_at > now() - interval '2 hour' AND id = $1;", event.Id).Scan(&val) == nil
 }
 
 func (event *Event) IsRated() bool {
@@ -184,7 +184,7 @@ func (event *Event) Rate() {
 			return
 		}
 		rating := weight * 2 * (2.0 / (2.05 * (float64(position+1) - 1.0)))
-		err = db.Instance.QueryRow(context.Background(), "UPDATE users SET rating = rating + $1 WHERE id IN (SELECT user_id FROM events_visits WHERE event_id = $2);", rating, event.Id).Scan()
+		err = db.Instance.QueryRow(context.Background(), "UPDATE users SET rating = rating + $1 WHERE id = $2 AND id IN (SELECT user_id FROM events_visits WHERE event_id = $3)", rating, user_id, event.Id).Scan()
 		if err != nil {
 			if err.Error() != "no rows in result set" {
 				logger.Error(err)
@@ -235,7 +235,7 @@ func (user *User) Visit(event *Event, position uint) {
 func (event *Event) SetWeight() {
 	var weight float64
 	err := db.Instance.QueryRow(context.Background(), `
-	SELECT ((SUM(general) + SUM(organization) + SUM(conversion)) / 3) / COUNT(*) * 10 + $1 FROM events_votes WHERE event_id = $2;
+	SELECT ((SUM(general) + SUM(organization) + SUM(conversion)) / 3::REAL) / COUNT(*) * 10 + $1 FROM events_votes WHERE event_id = $2;
 	`, event.Weight, event.Id).Scan(&weight)
 	if err != nil {
 		return

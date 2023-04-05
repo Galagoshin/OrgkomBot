@@ -1,16 +1,19 @@
 package api
 
+import "github.com/Galagoshin/GoLogger/logger"
+
 var names = make(map[uint]string)
 
 func SetLoginName(user User, name string) {
-	names[user.id] = name
+	names[uint(user.VKUser)] = name
 }
 
 func GetLoginName(user User) (string, bool) {
-	name, ex := names[user.id]
+	logger.Debug(0, false, uint(user.VKUser))
+	name, ex := names[uint(user.VKUser)]
 	return name, ex
 }
 
 func RemoveLoginName(user User) {
-	delete(names, user.id)
+	delete(names, uint(user.VKUser))
 }

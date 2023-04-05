@@ -22,7 +22,7 @@ func AutoStatusUpdater(args ...any) {
 	if time_now < startTime {
 		handler.Group.SetStatus(fmt.Sprintf("До начала недели математика осталось %s", formatTime(startTime-time_now)))
 	} else if time_now < endTime {
-		handler.Group.SetStatus(fmt.Sprintf("До конца недели математика осталось %s", formatTime(startTime-time_now)))
+		handler.Group.SetStatus(fmt.Sprintf("До конца недели математика осталось %s", formatTime(endTime-time_now)))
 	} else {
 		handler.Group.SetStatus("Неделя математика окончена!")
 	}

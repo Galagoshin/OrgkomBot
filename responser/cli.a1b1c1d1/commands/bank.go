@@ -113,7 +113,7 @@ func FinishPay(chat chats.Chat, outgoing chats.OutgoingMessage, user api.User) {
 		},
 		Text: "Нет ❌",
 	})
-	names := strings.Split(user.GetName(), " ")
+	names := strings.Split(receiver.GetName(), " ")
 	first_name := strings.Replace(strings.ToLower(names[0]), string([]rune(strings.ToLower(names[0]))[:1]), strings.ToUpper(string([]rune(names[0])[:1])), 1)
 	last_name := strings.Replace(strings.ToLower(names[1]), string([]rune(strings.ToLower(names[1]))[:1]), strings.ToUpper(string([]rune(names[1])[:1])), 1)
 	chat.SendMessage(chats.Message{Text: fmt.Sprintf("Уверен, что хочешь перевести %d \U0001FA99 участнику @id%d(%s %s)?", amount, receiver.VKUser, first_name, last_name), Keyboard: &kbrd})

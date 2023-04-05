@@ -14,7 +14,13 @@ func OnLike(args ...any) {
 	chat := chats.UserChat(like.Liker)
 	user := &api.User{VKUser: like.Liker}
 	user.Init()
+	if user.GetId() == 0 {
+		return
+	}
 	obj := like.LikedObject
+	if obj.GetType() != attachments.PostType {
+		return
+	}
 	post := attachments.Post{
 		Id:        obj.GetId(),
 		OwnerId:   obj.GetOwnerId(),

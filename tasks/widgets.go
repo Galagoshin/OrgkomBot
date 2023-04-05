@@ -31,7 +31,7 @@ func list_widget() {
 	widget := widgets.WidgetComactList{
 		Title:      "Мероприятия",
 		TitleUrl:   config.GetVKGroup(),
-		FooterText: "Подробнее о мероприятиях",
+		FooterText: "Подробнее",
 		FooterUrl:  config.GetVKMe(),
 	}
 	widget.Init()
@@ -63,7 +63,7 @@ func top_widget() {
 	}
 	widget.Init()
 	count := 0
-	for user, rating := range api.GetTopByRating() {
+	for _, user := range api.GetTopByRating() {
 		names := strings.Split(user.GetName(), " ")
 		first_name := strings.Replace(strings.ToLower(names[0]), string([]rune(strings.ToLower(names[0]))[:1]), strings.ToUpper(string([]rune(names[0])[:1])), 1)
 		last_name := strings.Replace(strings.ToLower(names[1]), string([]rune(strings.ToLower(names[1]))[:1]), strings.ToUpper(string([]rune(names[1])[:1])), 1)
@@ -76,7 +76,7 @@ func top_widget() {
 			},
 			{
 				Index: 1,
-				Text:  fmt.Sprintf("%.2f", rating),
+				Text:  fmt.Sprintf("%.2f", user.GetRating()),
 				Url:   requests.URL(fmt.Sprintf("https://vk.com/id%d", user.VKUser)),
 			},
 		}
